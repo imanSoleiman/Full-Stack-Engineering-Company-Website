@@ -1,0 +1,16 @@
+.env
+.env.*
+*.log
+*.zip
+*.rar
+*.7z
+
+.DS_Store
+Thumbs.db
+
+.vscode/
+.idea/
+
+tmp/
+temp/
+cache/

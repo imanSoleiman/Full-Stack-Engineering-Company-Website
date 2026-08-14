@@ -1,13 +1,47 @@
 <?php
-$host = 'localhost';
-$db = 'spectrum';  // 🔁 Replace with your actual database name
-$user = 'root';     // 🔁 Replace with your actual database user
-$pass = '';     // 🔁 Replace with your actual password
 
-$conn = new mysqli($host, $user, $pass, $db);
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+if (getenv('TIDB_HOST')) {
+
+    $host = getenv('TIDB_HOST');
+    $port = (int) getenv('TIDB_PORT');
+    $user = getenv('TIDB_USER');
+    $password = getenv('TIDB_PASSWORD');
+    $database = getenv('TIDB_DATABASE');
+
+    $conn = mysqli_init();
+
+    mysqli_ssl_set(
+        $conn,
+        null,
+        null,
+        "/etc/ssl/certs/ca-certificates.crt",
+        null,
+        null
+    );
+
+    mysqli_real_connect(
+        $conn,
+        $host,
+        $user,
+        $password,
+        $database,
+        $port,
+        null,
+        MYSQLI_CLIENT_SSL
+    );
+
+} else {
+
+    $conn = new mysqli(
+        "localhost",
+        "root",
+        "",
+        "spectrum",
+        3306
+    );
 }
+
+$conn->set_charset("utf8mb4");
 ?>

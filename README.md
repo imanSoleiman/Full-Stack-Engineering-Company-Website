@@ -147,46 +147,6 @@ Administrators can manage:
 
 ![Admin Dashboard](screenshots/AdminDashboard.png)
 
-## Project Structure
-
-```text
-spectrum/
-│
-├── assets/
-│   ├── about/
-│   ├── contact/
-│   ├── corporate/
-│   ├── devision/
-│   ├── gulfspectrum/
-│   └── home/
-│
-├── screenshots/
-│   ├── AboutUs.png
-│   ├── AdminDashboard.png
-│   ├── AdminLoginPage.png
-│   ├── CompanyPage-hero.png
-│   ├── companyStructure.png
-│   ├── companyStructureDetails.png
-│   ├── footer.png
-│   ├── HomePage.png
-│   ├── JobApplicationForm.png
-│   ├── LoadingPage.png
-│   ├── LocateUsPage.png
-│   ├── news.png
-│   ├── newsPageHero.png
-│   ├── newsSecondPart.png
-│   ├── ourServices.png
-│   ├── popupDetail-companyStructure.png
-│   ├── services-Hero.png
-│   ├── servicesPage.png
-│   └── TeamsPage.png
-│
-├── PHP files
-├── CSS files
-├── JavaScript files
-└── database files
-```
-
 ## Local Installation
 
 ### 1. Clone the repository

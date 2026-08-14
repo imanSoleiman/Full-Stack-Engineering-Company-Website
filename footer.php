@@ -241,18 +241,7 @@ text-transform: uppercase;
     padding-bottom: 0px;
 padding:50px;
   }
-  
-.text-wrapper h1 {
-    font-size: 30px;
-    letter-spacing: 1px;
-    animation: move-text 6000ms linear infinite;
-    white-space: nowrap;
-    padding: 0 2rem;
-    text-transform: uppercase;
-}
-.text-slider{
-  padding: 10px 5px;
-}
+ 
 .footer-container-second{
       padding: 20px;
 }
@@ -386,16 +375,7 @@ padding:50px;
    </div>
 </div>
 
-    <div class="text-slider">
-        <div class="text-wrapper">
-            <?php
-            for($i = 0; $i < 6; $i++){ // repeat 6 times
-                echo "<h1>" . $footer['slider_text'] . "</h1>";
-            }
-            ?>
-        </div>
-    </div>
-
+  
 
 <div class="last-section">
     <div class="last-section-text">

@@ -98,6 +98,7 @@ while ($row = $res->fetch_assoc()) {
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   
+<link rel="icon" type="image/png" href="./assets/Logo.jpg"/>
 <link rel="stylesheet" href="style.css"/>
 <title>Spectrum</title>
 <style> 
@@ -1129,7 +1130,7 @@ object-fit: cover;
     text-transform: uppercase;
 }
 .company-news{
-  background-image:url('./images/8578ed25438fa9c3e2706c092fbcb51b.jpg');
+  background-image:url('./assets/newsBackground.jpg');
   position:relative;
 overflow:hidden;
 padding:20px;
@@ -1160,7 +1161,7 @@ padding:20px;
     margin-bottom: 10;
 }
 .gray{
-    background-image:url('./images/t5-card-bg.png');
+    background-image:url('./assets/t5-card-bg.png');
   border-radius:10px;
   width:520px;
   height: 320px;
@@ -1299,7 +1300,7 @@ transform: rotate(90deg);
   }
 }
 .final-spectrum-right{
-  background-image:url('images/WhatsApp\ Image\ 2025-09-12\ at\ 00.56.33_3274f75b.jpg');
+  background-image:url('assets/redBackground.jpg');
   border-radius:10px;
   color:white;
 
@@ -1761,7 +1762,7 @@ will-change:transform;
             <img src="./assets/home/<?= $left_cards[0]['image1'] ?>" alt="Left Card Image">
             <div class="card-two">
                 <div class="card-two-container">
-                  <img src="./images/setting (2).png">
+                  <img src="./assets/setting (2).png">
                    <p><?= htmlspecialchars($left_cards[0]['overlay_text'] ?? 'kjkflj') ?></p>
                 </div>
            </div>
@@ -1787,7 +1788,7 @@ will-change:transform;
              <div class="right-points-grid">
                  <?php foreach($right_points as $point): ?>
                      <div class="right-point">
-                        <img class="check-mark" src="./images/checked (2).png">
+                        <img class="check-mark" src="./assets/checked (2).png">
                         <p><?= $point['text'] ?></p>
                      </div>
                  <?php endforeach; ?>
@@ -2626,7 +2627,7 @@ gsap.set(".split-overlay .intro-title .first-char", {
       x: isMobile ? "7.5rem" : "5rem",
       fontSize: isMobile ? "7rem" : "14rem",
       fontWeight: "900",
-      scale: 1.5,        // 🔥 make bigger instead of smaller
+      scale: 1.5,        
       duration: 0.75,
       color: "red",
       onComplete: () => {

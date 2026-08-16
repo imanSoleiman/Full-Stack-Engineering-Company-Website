@@ -1,11 +1,10 @@
 <?php
-session_start();
+require_once __DIR__ . '/../session.php';
 if (!isset($_SESSION['admin_logged_in'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit;
 }
 
-include '../../config.php';  // adjust path if needed
 
 $id = $_POST['id'];
 $show_on_homepage = isset($_POST['show_on_homepage']) ? 1 : 0;

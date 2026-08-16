@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../session.php';
 /**
  * Shared image helper for the admin panel.
  *

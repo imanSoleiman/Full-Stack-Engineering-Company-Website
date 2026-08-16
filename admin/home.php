@@ -1,7 +1,9 @@
 <?php
-session_start();
-include('../config.php');
-if (!isset($_SESSION['admin_logged_in'])) exit;
+require_once __DIR__ . '/session.php';
+if (empty($_SESSION['admin_logged_in'])) {
+    header('Location: login.php');
+    exit;
+}
 
 // Fetch unread contact messages
 $unreadMessages = $conn->query("SELECT * FROM contact_messages WHERE is_read = 0 ORDER BY created_at DESC LIMIT 5");

@@ -1,11 +1,10 @@
 <?php
-session_start();
+require_once __DIR__ . '/../session.php';
 if (!isset($_SESSION['admin_logged_in'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit;
 }
 
-include('../../config.php');
 $id = $_GET['id'];
 
 $category = $conn->query("SELECT * FROM gulf_spectrum_categories WHERE id=$id")->fetch_assoc();

@@ -1,6 +1,7 @@
-<?php include "../../config.php"; ?>
-require_once __DIR__ . '/../includes/image_upload.php';
 <?php
+require_once __DIR__ . '/../session.php'; 
+require_once __DIR__ . '/../includes/image_upload.php';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['title'];
 

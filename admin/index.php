@@ -1,6 +1,5 @@
 <?php
-session_start();
-
+require_once __DIR__ . '/session.php';
 $admin_user = "admin";
 $admin_pass = "12345";
 
@@ -9,6 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = trim($_POST['password'] ?? '');
 
     if ($username === $admin_user && $password === $admin_pass) {
+        session_regenerate_id(true);
         $_SESSION['admin_logged_in'] = true;
         header("Location: home.php");
         exit;

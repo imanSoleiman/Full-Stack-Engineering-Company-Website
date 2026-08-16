@@ -1,10 +1,9 @@
 <?php
-session_start();
-include("../config.php"); // adjust path
+require_once __DIR__ . '/session.php';
 
 // 1. If admin not logged in → redirect to login
 if(!isset($_SESSION['admin_logged_in'])){
-    header("Location: ../login.php");
+    header("Location: login.php");
     exit;
 }
 

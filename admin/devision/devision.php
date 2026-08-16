@@ -1,11 +1,10 @@
 <?php
-session_start();
+require_once __DIR__ . '/../session.php';
 if (!isset($_SESSION['admin_logged_in'])) {
-    header("Location: login.php");
+    header("Location: ../login.php");
     exit;
 }
 
-include('../../config.php'); // Database connection ($conn)
 require_once __DIR__ . '/../includes/image_upload.php';
 
 $message = "";

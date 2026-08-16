@@ -1,5 +1,5 @@
 <?php
-include '../../config.php';
+require_once __DIR__ . '/../session.php';
 
 $message = "";
 $success = "";

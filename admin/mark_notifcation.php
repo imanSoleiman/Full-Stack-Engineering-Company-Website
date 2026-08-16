@@ -1,7 +1,6 @@
 // mark_message_read.php
 <?php
-session_start();
-include('../config.php');
+require_once __DIR__ . '/session.php';
 if (!isset($_SESSION['admin_logged_in'])) exit;
 
 if(isset($_POST['id'])) {

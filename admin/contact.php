@@ -1,7 +1,5 @@
 <?php
-session_start();
-
-include('../config.php');
+require_once __DIR__ . '/session.php';
 
 // Only logged-in admins can access
 if (!isset($_SESSION['admin_logged_in'])) {

@@ -392,7 +392,7 @@ width:340px;
     <?php include('header.php') ?>
 <section id="first-part"> 
 <div class="services-first-part" 
-     style="background: url('./assets/service_page_uploads/<?php echo $da['background_image']; ?>') center center / cover no-repeat;">
+     style="background: url('<?= htmlspecialchars(image_url($da['background_image'], './assets/service_page_uploads'), ENT_QUOTES, 'UTF-8') ?>') center center / cover no-repeat;">
 
     <div class="overlay"></div> 
     <div class="services-text">
@@ -416,7 +416,7 @@ width:340px;
         <?php while($service = $servicess->fetch_assoc()): ?>
             <div class="service-card1">
                 <div class="image-service-section">
-                  <img src="./assets/service_page_uploads/<?php echo $service['image']; ?>" alt="<?php echo $service['title']; ?>">
+                  <img src="<?= htmlspecialchars(image_url($service['image'], './assets/service_page_uploads'), ENT_QUOTES, 'UTF-8') ?>" alt="<?php echo $service['title']; ?>">
                    <div class="line-image"></div>
                 </div>
                 
@@ -466,7 +466,7 @@ width:340px;
         </div>
 
         <div class="cadd-image">
-            <img src="./assets/service_page_uploads/<?= htmlspecialchars($section['image']) ?>" alt="CADD Image">
+            <img src="<?= htmlspecialchars(image_url($section['image'], './assets/service_page_uploads'), ENT_QUOTES, 'UTF-8') ?>" alt="CADD Image">
         </div>
     </div>
 </section>

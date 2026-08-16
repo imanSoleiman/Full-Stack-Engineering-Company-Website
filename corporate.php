@@ -406,7 +406,7 @@ border-radius:100%;
     </div>
 
     <div class="response-right">
-   <img src="./assets/corporate/<?php echo htmlspecialchars($data['image_path']); ?>" alt="Responsibility Image">
+   <img src="<?= htmlspecialchars(image_url($data['image_path'], './assets/corporate'), ENT_QUOTES, 'UTF-8') ?>" alt="Responsibility Image">
     </div>
   </div>
 </section>
@@ -429,7 +429,7 @@ border-radius:100%;
 <section class="responsibility">
   <div class="respons-container">
     <div class="response-right">
-<img src="./assets/corporate/<?= htmlspecialchars($da['image_path']) ?>" alt="Responsibility Image">
+<img src="<?= htmlspecialchars(image_url($da['image_path'], './assets/corporate'), ENT_QUOTES, 'UTF-8') ?>" alt="Responsibility Image">
 
     </div>
 

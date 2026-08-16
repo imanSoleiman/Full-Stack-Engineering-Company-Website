@@ -98,7 +98,6 @@ while ($row = $res->fetch_assoc()) {
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   
-<link rel="icon" type="image/png" href="./assets/Logo.jpg"/>
 <link rel="stylesheet" href="style.css"/>
 <title>Spectrum</title>
 <style> 
@@ -1238,7 +1237,7 @@ padding:20px;
    max-width:1500px;
 }
 .final-spectrum-left{
- background-image:url('./images/d3069074a097a03eefd743add101a7d1.jpg');
+ background-color:white;
  border-radius:20px;
 }
 .final-flex-spectrum{
@@ -1300,7 +1299,7 @@ transform: rotate(90deg);
   }
 }
 .final-spectrum-right{
-  background-image:url('assets/redBackground.jpg');
+  background-image:url('./assets/redBackground.jpg');
   border-radius:10px;
   color:white;
 
@@ -1709,7 +1708,7 @@ will-change:transform;
       </div>
     <?php else: ?>
      <?php foreach ($slides as $index => $s): ?>
-  <div class="item" style="background-image: url('./assets/home/<?= htmlspecialchars($s['image_path']) ?>');">
+  <div class="item" style="background-image: url('<?= htmlspecialchars(image_url($s['image_path'], './assets/home'), ENT_QUOTES, 'UTF-8') ?>');">
     <div class="content">
       <p><?= str_pad($index + 1, 2, '0', STR_PAD_LEFT) ?>/<?= count($slides) ?></p>
       <div class="title"><?= htmlspecialchars($s['title']) ?></div>
@@ -1759,7 +1758,7 @@ will-change:transform;
          </div>
          <div class="who-left-image">
             <!-- Dynamic Image Only -->
-            <img src="./assets/home/<?= $left_cards[0]['image1'] ?>" alt="Left Card Image">
+            <img src="<?= htmlspecialchars(image_url($left_cards[0]['image1'], './assets/home'), ENT_QUOTES, 'UTF-8') ?>" alt="Left Card Image">
             <div class="card-two">
                 <div class="card-two-container">
                   <img src="./assets/setting (2).png">
@@ -1772,7 +1771,7 @@ will-change:transform;
      
      <div class="who-left-two">
     <div class="who-left-image">
-  <img src="./assets/home/<?= $left_cards[0]['image2'] ?? 'fallback-bottom.jpg' ?>" alt="Bottom Left Image">
+  <img src="<?= htmlspecialchars(image_url($left_cards[0]['image2'] ?? 'fallback-bottom.jpg', './assets/home'), ENT_QUOTES, 'UTF-8') ?>" alt="Bottom Left Image">
     </div>
 </div>
      </div>
@@ -1819,7 +1818,7 @@ will-change:transform;
       <?php foreach($services as $index => $service): ?>
       <div class="swiper-slide <?= $index === 0 ? 'active' : 'none' ?>" data-index="<?= $index ?>">
         <div class="img-cover">
-          <img src="./assets/service_page_uploads/<?= $service['image'] ?>" alt="<?= $service['title'] ?>">
+          <img src="<?= htmlspecialchars(image_url($service['image'], './assets/service_page_uploads'), ENT_QUOTES, 'UTF-8') ?>" alt="<?= $service['title'] ?>">
         </div>
       </div>
       <?php endforeach; ?>
@@ -1878,7 +1877,7 @@ will-change:transform;
         <?php while ($loc = mysqli_fetch_assoc($company)) { ?>
           <div class="company-single-slider">
             <div class="company-single-container">
-              <img src="./assets/structure/<?= htmlspecialchars($loc['image_path']) ?>" alt="<?= htmlspecialchars($loc['city']) ?>">
+              <img src="<?= htmlspecialchars(image_url($loc['image_path'], './assets/structure'), ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($loc['city']) ?>">
                <h4><?= !empty($loc['country']) ? htmlspecialchars($loc['country']) : '' ?></h4>
 
             </div>
@@ -1908,7 +1907,7 @@ will-change:transform;
                 <?php while($row = $r->fetch_assoc()): ?>
                     <div class="cardOne">
                         <div class="project-image">
-                         <img src="./assets/projects_uploads/<?= htmlspecialchars($row['image_path']); ?>" alt="<?= htmlspecialchars($row['name']); ?>">
+                         <img src="<?= htmlspecialchars(image_url($row['image_path'], './assets/projects_uploads'), ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($row['name']); ?>">
                         </div>
                         <h4><?= htmlspecialchars($row['name']); ?></h4>
                         <p>
@@ -2627,7 +2626,7 @@ gsap.set(".split-overlay .intro-title .first-char", {
       x: isMobile ? "7.5rem" : "5rem",
       fontSize: isMobile ? "7rem" : "14rem",
       fontWeight: "900",
-      scale: 1.5,        
+      scale: 1.5,        // 🔥 make bigger instead of smaller
       duration: 0.75,
       color: "red",
       onComplete: () => {

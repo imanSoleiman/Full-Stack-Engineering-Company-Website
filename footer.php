@@ -275,12 +275,26 @@ padding:50px;
   <div class="footer-container-first">
     <div class="footer-container-first-grid">
 
-     <div class="logo-container-wrapper">
- <div class="logo-image">
-    <a href="./index.php">
-        <img src="./assets/home/<?= $footer['logo'] ?>" alt="Spectrum Logo">
-    </a>
-</div>
+     <div class="logo-container-wrapper"> 
+    <div class="logo-image"> 
+
+        <a href="./index.php"> 
+
+            <img 
+                src="<?= htmlspecialchars(
+                    image_url(
+                        $footer['logo'],
+                        './assets/home'
+                    ),
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>" 
+                alt="Spectrum Logo"
+            >
+
+        </a> 
+
+    </div> 
 </div>
 
 

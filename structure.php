@@ -414,7 +414,7 @@ text-transform: uppercase;
 <body>
    <?php include('header.php') ;?>
    <main>
-<div class="compnay-structure-first" style="background-image: url('./assets/structure/<?= $company['background_image'] ?>');">
+<div class="compnay-structure-first" style="background-image: url('<?= htmlspecialchars(image_url($company['background_image'], './assets/structure'), ENT_QUOTES, 'UTF-8') ?>');">
    <div class="companys-structure-container">
        <div class="company-structure-header">
             <h1><?= $company['heading'] ?></h1>
@@ -454,7 +454,7 @@ text-transform: uppercase;
     <?php foreach ($locations as $loc): ?>
       <div class="location-cards-content" data-location-id="<?= $loc['id'] ?>">
 
-    <img src="./assets/structure/<?= htmlspecialchars($loc['image_path']) ?>" alt="<?= htmlspecialchars($loc['city']) ?>">
+    <img src="<?= htmlspecialchars(image_url($loc['image_path'], './assets/structure'), ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($loc['city']) ?>">
 
 
 

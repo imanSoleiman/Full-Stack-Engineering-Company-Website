@@ -631,7 +631,7 @@ grid-template-rows:auto auto;
 <body>
     <?php include('header.php');?>
   
-<section class="project-intro" style="background-image: url('./assets/news/<?php echo $bg_image; ?>');">
+<section class="project-intro" style="background-image: url('<?= htmlspecialchars(image_url($bg_image, './assets/news'), ENT_QUOTES, 'UTF-8') ?>');">
   <div class="project-first-container">
     <div class="p-container"> 
       <div class="left-part">
@@ -681,7 +681,7 @@ while($row = $newsResult->fetch_assoc()):
             <h2><?= $row['date_day'] ?></h2>
             <h1><?= $monthName ?></h1>
         </div>
-        <img src="./assets/news/<?= $row['image'] ?>" alt="<?= htmlspecialchars($row['title']) ?>">
+        <img src="<?= htmlspecialchars(image_url($row['image'], './assets/news'), ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($row['title']) ?>">
         <div class="news-details">
             <div class="new-details-text">
                 <p><?= $row['date_day'] . ' ' . date('F', mktime(0,0,0,$row['date_month'],10)) . ' ' . $row['date_year'] ?></p>
@@ -749,7 +749,7 @@ while($row = $newsResult->fetch_assoc()):
             $monthName = date('M', mktime(0,0,0,$post['date_month'],10));
         ?>
         <div class="recent-posts">
-            <img src="./assets/news/<?= $post['image'] ?>" alt="<?= htmlspecialchars($post['title']) ?>">
+            <img src="<?= htmlspecialchars(image_url($post['image'], './assets/news'), ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($post['title']) ?>">
             <div class="recent-post-text">
                 <h4><?= htmlspecialchars($post['title']) ?></h4>
                 <p class="desc"><?= htmlspecialchars(substr($post['description'],0,100)) ?>...</p>

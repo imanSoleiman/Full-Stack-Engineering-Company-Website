@@ -1,10 +1,26 @@
 <?php
 include 'config.php';
 
+if (!function_exists('image_url')) {
+    function image_url($image, $localFolder = '') {
+        if (empty($image)) {
+            return '';
+        }
+
+        if (preg_match('#^https?://#i', $image)) {
+            return $image;
+        }
+
+        return rtrim($localFolder, '/') . '/' . ltrim($image, '/');
+    }
+}
+
 $sec = $conn->query("SELECT * FROM who_we_are_section LIMIT 1")->fetch_assoc();
 $imagesResult = $conn->query("SELECT * FROM who_we_are_images ORDER BY position ASC");
 $images = [];
-while($img = $imagesResult->fetch_assoc()) { $images[$img['position']] = "./assets/about/".$img['image_name']; }
+while($img = $imagesResult->fetch_assoc()) {
+    $images[$img['position']] = image_url($img['image_name'], './assets/about');
+}
 $vision = $conn->query("SELECT * FROM vision_section LIMIT 1")->fetch_assoc();
 
 
@@ -673,7 +689,7 @@ body {
       </h6>
       <div class="our-story-cardContent">
         <div class="image-left-story">
-          <img src="./assets/about/<?= htmlspecialchars($card['image_path']) ?>" 
+          <img src="<?= htmlspecialchars(image_url($card['image_path'], './assets/about')) ?>" 
                alt="<?= htmlspecialchars($card['title']) ?>">
         </div>
         <div class="our-story-left">

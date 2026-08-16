@@ -659,7 +659,7 @@ width:100% !important;
 <?php include('./header.php');?>
 
 
- <section class="team-intro" style="background-image: url('<?= $data['image_path'] ?>');">
+ <section class="team-intro" style="background-image: url('<?= htmlspecialchars(image_url($data['image_path'], './assets/teams'), ENT_QUOTES, 'UTF-8') ?>');">
   <div class="team-first-container">
     <div class="p-container"> 
       <div class="left-part">
@@ -694,7 +694,7 @@ width:100% !important;
     </div>
 
     <div class="second-section-img">
-  <img src="./assets/teams/<?= $sec['image'] ?>" alt="Engineering Work">
+  <img src="<?= htmlspecialchars(image_url($sec['image'], './assets/teams'), ENT_QUOTES, 'UTF-8') ?>" alt="Engineering Work">
 
     </div>
   </div>
@@ -712,7 +712,7 @@ width:100% !important;
 
       <div class="middle-east-image">
         <?php if (!empty($section['image_path'])) { 
-          $imagePath = "./assets/teams/" . $section['image_path'];
+          $imagePath = image_url($section['image_path'], './assets/teams');
         ?>
           <img src="<?php echo $imagePath; ?>" alt="Middle East">
         <?php } ?>
@@ -762,7 +762,7 @@ width:100% !important;
           <!-- Image -->
           <div class="image-swiper"> 
       
-            <img src="assets/teams/<?= htmlspecialchars($slide['image']) ?>" alt="Professional Excellence Slide"/>
+            <img src="<?= htmlspecialchars(image_url($slide['image'], './assets/teams'), ENT_QUOTES, 'UTF-8') ?>" alt="Professional Excellence Slide"/>
           </div>
 
           <!-- Lists -->

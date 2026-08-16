@@ -44,4 +44,41 @@ if (getenv('TIDB_HOST')) {
 }
 
 $conn->set_charset("utf8mb4");
+
+
+/*
+|--------------------------------------------------------------------------
+| IMAGE URL HELPER
+|--------------------------------------------------------------------------
+| Supports:
+| 1. Existing local images inside assets/
+| 2. New images stored as full Vercel Blob URLs
+|--------------------------------------------------------------------------
+*/
+
+if (!function_exists('image_url')) {
+
+    function image_url($image, $localFolder = '')
+    {
+        if (empty($image)) {
+            return '';
+        }
+
+        $image = (string) $image;
+
+        // Vercel Blob / external image URL
+        if (preg_match('#^https?://#i', $image)) {
+            return $image;
+        }
+
+        // Existing local image
+        if ($localFolder === '') {
+            return ltrim($image, '/');
+        }
+
+        return rtrim($localFolder, '/')
+            . '/'
+            . ltrim($image, '/');
+    }
+}
 ?>

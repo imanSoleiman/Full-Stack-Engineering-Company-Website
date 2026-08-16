@@ -1,16 +1,33 @@
+# Environment / secrets
 .env
 .env.*
+!.env.example
+
+# Logs
 *.log
+
+# Archives
 *.zip
 *.rar
 *.7z
 
-.DS_Store
-Thumbs.db
+# Vercel
+.vercel/
 
+# Node dependencies
+node_modules/
+blob-service/node_modules/
+
+# IDE
 .vscode/
 .idea/
 
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
 tmp/
 temp/
 cache/
+

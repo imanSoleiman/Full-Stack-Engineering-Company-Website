@@ -5,9 +5,26 @@
       "root": ".",
       "entrypoint": "Dockerfile.vercel",
       "runtime": "container"
+    },
+    "blob": {
+      "root": "blob-service/",
+      "entrypoint": "Dockerfile.vercel",
+      "runtime": "container"
     }
   },
   "rewrites": [
+    {
+      "source": "/blob-upload",
+      "destination": {
+        "service": "blob"
+      }
+    },
+    {
+      "source": "/blob-delete",
+      "destination": {
+        "service": "blob"
+      }
+    },
     {
       "source": "/(.*)",
       "destination": {

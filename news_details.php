@@ -342,7 +342,7 @@ padding:0px 30px;
 
 <section class="news-details">
     <div class="news-details-container">
-        <img src="./assets/news/<?= $news['image'] ?>" alt="<?= htmlspecialchars($news['title']) ?>">
+        <img src="<?= htmlspecialchars(image_url($news['image'], './assets/news'), ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($news['title']) ?>">
         
         <?php while($sec = $sections->fetch_assoc()): ?>
         <div class="news-details-text">

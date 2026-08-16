@@ -44,7 +44,17 @@ $header = $result->fetch_assoc();
         <div class="original-nav-container">
           <div class="original-nav-logo">
             <a href="index.php">
-              <img src="./assets/home/<?= htmlspecialchars($header['logo']) ?>" alt="Spectrum Logo" />
+             <img
+    src="<?= htmlspecialchars(
+        image_url(
+            $header['logo'],
+            './assets/home'
+        ),
+        ENT_QUOTES,
+        'UTF-8'
+    ) ?>"
+    alt="Spectrum Logo"
+/>
             </a>
           </div>
 

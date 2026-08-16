@@ -24,7 +24,7 @@ while($cat = $categories->fetch_assoc()) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  
+
     <link href="./style.css" rel="stylesheet">
     <title>gulf spectrum</title>
     <style>
@@ -47,7 +47,7 @@ background-color:black;
     }
 
     .gulf-spectrum-header h2{
- 
+
     text-transform: uppercase;
     font-size: 50px;
     font-weight: 600;
@@ -102,7 +102,7 @@ background-color:black;
     .view-image a{
             display: inline-block;
     flex: 0 0 auto;
-   
+
     text-transform: capitalize;
     font-size: 16px;
     line-height: 1;
@@ -242,7 +242,7 @@ background-color:black;
     </style>
 </head>
 <body>
-  
+
 <?php include('header.php'); ?>
 
 <div class="gulf-spectrum">
@@ -262,13 +262,32 @@ background-color:black;
                 <?php foreach($cat['images'] as $index => $img): ?>
                     <div class="single-spectrum-image <?= $index === 0 ? 'active' : '' ?>">
                         <div class="image-gulf"> 
-                            <img src="assets/spectrum/<?= $img['image_name'] ?>" alt="<?= $img['header'] ?>">
+                            <img
+                                src="<?= htmlspecialchars(
+                                    image_url(
+                                        $img['image_name'],
+                                        './assets/spectrum'
+                                    ),
+                                    ENT_QUOTES,
+                                    'UTF-8'
+                                ) ?>"
+                                alt="<?= htmlspecialchars($img['header']) ?>"
+                            >
                         </div>
                         <div class="gulf-spectrum-info">
                             <h3><?= $img['header'] ?></h3>
                             <p><?= $img['description'] ?></p>
                             <div class="view-image">
-                                <a href="assets/spectrum/<?= $img['image_name'] ?>">View image</a>
+                                <a
+                                    href="<?= htmlspecialchars(
+                                        image_url(
+                                            $img['image_name'],
+                                            './assets/spectrum'
+                                        ),
+                                        ENT_QUOTES,
+                                        'UTF-8'
+                                    ) ?>"
+                                >View image</a>
                             </div>
                         </div>
                     </div>
@@ -289,57 +308,57 @@ background-color:black;
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/Draggable.min.js"></script>
-<script>
-// JS logic same as Gulf Spectrum page
-document.addEventListener("DOMContentLoaded", function() {
-    const buttons = document.querySelectorAll(".gulf-spectrum-categories button");
-    const images = document.querySelectorAll(".single-spectrum-image");
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/Draggable.min.js"></script> 
+<script> 
+// JS logic same as Gulf Spectrum page 
+document.addEventListener("DOMContentLoaded", function() { 
+    const buttons = document.querySelectorAll(".gulf-spectrum-categories button"); 
+    const images = document.querySelectorAll(".single-spectrum-image"); 
 
-    buttons.forEach((btn, index) => {
-        btn.addEventListener("click", () => {
-            buttons.forEach(b => b.classList.remove("active"));
-            images.forEach(img => img.classList.remove("active"));
+    buttons.forEach((btn, index) => { 
+        btn.addEventListener("click", () => { 
+            buttons.forEach(b => b.classList.remove("active")); 
+            images.forEach(img => img.classList.remove("active")); 
 
-            btn.classList.add("active");
+            btn.classList.add("active"); 
 
-            const target = images[index];
-            target.classList.add("active");
-            gsap.fromTo(target, 
-                {opacity: 0, y: 50}, 
-                {opacity: 1, y: 0, duration: 0.6, ease: "power2.out"}
-            );
-        });
-    });
+            const target = images[index]; 
+            target.classList.add("active"); 
+            gsap.fromTo(target,  
+                {opacity: 0, y: 50},  
+                {opacity: 1, y: 0, duration: 0.6, ease: "power2.out"} 
+            ); 
+        }); 
+    }); 
 
-    // Default active
-    buttons[0]?.classList.add("active");
-    images[0]?.classList.add("active");
+    // Default active 
+    buttons[0]?.classList.add("active"); 
+    images[0]?.classList.add("active"); 
 
-    const popup = document.getElementById("imagePopup");
-    const popupImg = document.getElementById("popupImg");
-    const closeBtn = document.querySelector(".popup-close");
+    const popup = document.getElementById("imagePopup"); 
+    const popupImg = document.getElementById("popupImg"); 
+    const closeBtn = document.querySelector(".popup-close"); 
 
-    document.querySelectorAll(".view-image a").forEach(link => {
-        link.addEventListener("click", function(e) {
-            e.preventDefault();
-            popup.style.display = "flex";
-            popupImg.src = this.getAttribute("href");
-        });
-    });
+    document.querySelectorAll(".view-image a").forEach(link => { 
+        link.addEventListener("click", function(e) { 
+            e.preventDefault(); 
+            popup.style.display = "flex"; 
+            popupImg.src = this.getAttribute("href"); 
+        }); 
+    }); 
 
-    closeBtn.addEventListener("click", () => {
-        popup.style.display = "none";
-    });
+    closeBtn.addEventListener("click", () => { 
+        popup.style.display = "none"; 
+    }); 
 
-    popup.addEventListener("click", (e) => {
-        if (e.target === popup) {
-            popup.style.display = "none";
-        }
-    });
-});
-</script>
-<script src="header.js"></script>
-<script src="footer.js"></script>
-</body>
+    popup.addEventListener("click", (e) => { 
+        if (e.target === popup) { 
+            popup.style.display = "none"; 
+        } 
+    }); 
+}); 
+</script> 
+<script src="header.js"></script> 
+<script src="footer.js"></script> 
+</body> 
 </html>

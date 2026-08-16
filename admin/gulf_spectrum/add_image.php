@@ -6,6 +6,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 include('../../config.php');
+require_once __DIR__ . '/../includes/image_upload.php';
 $category_id = $_GET['category_id'];
 $category = $conn->query("SELECT * FROM gulf_spectrum_categories WHERE id=$category_id")->fetch_assoc();
 
@@ -13,10 +14,11 @@ if(isset($_POST['submit'])){
     $header = $_POST['header'];
     $description = $_POST['description'];
 
-    $imageName = $_FILES['image']['name'];
-    $tmpName = $_FILES['image']['tmp_name'];
-    $uploadDir = "../../assets/gulfspectrum/";
-    move_uploaded_file($tmpName, $uploadDir.$imageName);
+    $imageName = spectrum_store_image(
+        $_FILES['image'],
+        'gulfspectrum',
+        __DIR__ . '/../../assets/gulfspectrum/'
+    );
 
     $stmt = $conn->prepare("INSERT INTO gulf_spectrum_images (category_id, image_name, header, description) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("isss", $category_id, $imageName, $header, $description);

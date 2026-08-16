@@ -6,8 +6,9 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 
-$uploadFolder = '../../assets/structure/';
+$uploadFolder = __DIR__ . '/../../assets/structure/';
 
 // Handle deletion
 if (isset($_GET['delete_id'])) {
@@ -15,11 +16,11 @@ if (isset($_GET['delete_id'])) {
 
     $loc_res = mysqli_query($conn, "SELECT image_path FROM locations WHERE id = $delete_id");
     $loc = mysqli_fetch_assoc($loc_res);
-    if ($loc && !empty($loc['image_path'])) unlink($uploadFolder . basename($loc['image_path']));
+    if ($loc && !empty($loc['image_path'])) spectrum_delete_image($loc['image_path'], $uploadFolder);
 
     $popup_res = mysqli_query($conn, "SELECT background_image_path FROM location_details WHERE location_id = $delete_id");
     $popup = mysqli_fetch_assoc($popup_res);
-    if ($popup && !empty($popup['background_image_path'])) unlink($uploadFolder . basename($popup['background_image_path']));
+    if ($popup && !empty($popup['background_image_path'])) spectrum_delete_image($popup['background_image_path'], $uploadFolder);
 
     mysqli_query($conn, "DELETE FROM departments WHERE location_id = $delete_id");
     mysqli_query($conn, "DELETE FROM location_details WHERE location_id = $delete_id");
@@ -46,8 +47,11 @@ if (isset($_POST['update_structure'])) {
     $description = $_POST['description'];
 
     if ($_FILES['background_image']['name']) {
-        $imageName = time() . '_' . $_FILES['background_image']['name'];
-        move_uploaded_file($_FILES['background_image']['tmp_name'], $uploadFolder . $imageName);
+        $imageName = spectrum_store_image(
+            $_FILES['background_image'],
+            'structure',
+            $uploadFolder
+        );
     } else {
         $imageName = $structure_data['background_image'];
     }
@@ -174,7 +178,7 @@ img {
 
         <label>Background Image:</label>
         <?php if (!empty($structure_data['background_image'])): ?>
-            <img src="<?= $uploadFolder . htmlspecialchars($structure_data['background_image']) ?>" width="200" alt="Background"><br><br>
+            <img src="<?= htmlspecialchars(spectrum_admin_image_src($structure_data['background_image'], '../../assets/structure/')) ?>" width="200" alt="Background"><br><br>
         <?php endif; ?>
         <input type="file" name="background_image">
 
@@ -196,14 +200,14 @@ img {
         <tr>
             <td>
                 <?php if (!empty($row['image_path'])): ?>
-                    <img src="<?= $uploadFolder . htmlspecialchars(basename($row['image_path'])) ?>" width="80" alt="<?= htmlspecialchars($row['city']) ?>">
+                    <img src="<?= htmlspecialchars(spectrum_admin_image_src($row['image_path'], '../../assets/structure/')) ?>" width="80" alt="<?= htmlspecialchars($row['city']) ?>">
                 <?php endif; ?>
             </td>
             <td><?= htmlspecialchars($row['city']) ?></td>
             <td><?= htmlspecialchars($row['country']) ?></td>
             <td>
                 <?php if (!empty($row['background_image_path'])): ?>
-                    <img src="<?= $uploadFolder . htmlspecialchars(basename($row['background_image_path'])) ?>" width="80" alt="Popup">
+                    <img src="<?= htmlspecialchars(spectrum_admin_image_src($row['background_image_path'], '../../assets/structure/')) ?>" width="80" alt="Popup">
                 <?php endif; ?>
             </td>
             <td>

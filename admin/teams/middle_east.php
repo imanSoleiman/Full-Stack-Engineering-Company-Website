@@ -1,5 +1,6 @@
 <?php
 include '../../config.php'; 
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -179,9 +180,9 @@ $countries = $conn->query("SELECT * FROM middle_east_countries");
         <h2><?php echo htmlspecialchars($section['header']); ?></h2>
         <p><?php echo htmlspecialchars($section['content']); ?></p>
         <?php if ($section['image_path']) { 
-            $imagePath = "../../assets/teams/" . $section['image_path'];
+            $imagePath = spectrum_admin_image_src($section['image_path'], '../../assets/teams/');
         ?>
-            <img src="<?php echo $imagePath; ?>" alt="Section Image">
+            <img src="<?php echo htmlspecialchars($imagePath); ?>" alt="Section Image">
         <?php } ?>
         <a href="edit_section.php?id=<?php echo $section['id']; ?>" class="edit-btn"><i class="fa-solid fa-pen-to-square"></i> Edit Section</a>
     </div>

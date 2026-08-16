@@ -1,5 +1,6 @@
 <?php
 include('../../config.php');
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -20,12 +21,11 @@ if(isset($_POST['update'])){
     // Handle background image upload
     $bg_image = $row['background_image']; // default
     if(isset($_FILES['background_image']) && $_FILES['background_image']['name'] != ""){
-        $ext = pathinfo($_FILES['background_image']['name'], PATHINFO_EXTENSION);
-        $new_name = 'news_bg_' . time() . '.' . $ext;
-        $upload_path = '../../assets/news/' . $new_name;
-        if(move_uploaded_file($_FILES['background_image']['tmp_name'], $upload_path)){
-            $bg_image = $new_name;
-        }
+        $bg_image = spectrum_store_image(
+            $_FILES['background_image'],
+            'news',
+            __DIR__ . '/../../assets/news/'
+        );
     }
 
     $stmt = $conn->prepare("UPDATE news_intro SET header_line1=?, header_line2=?, header_line3=?, header_line4=?, paragraph=?, background_image=? WHERE id=1");
@@ -134,7 +134,7 @@ button:hover {
     <label>Background Image:</label>
     <input type="file" name="background_image" accept="image/*">
     <small>Current Image:</small><br>
-    <img src="../../assets/news/<?= htmlspecialchars($row['background_image']) ?>" class="preview"><br><br>
+    <img src="<?= htmlspecialchars(spectrum_admin_image_src($row['background_image'], '../../assets/news/')) ?>" class="preview"><br><br>
 
     <button type="submit" name="update"><i class="fa fa-save"></i> Update Content</button>
 </form>

@@ -1,5 +1,6 @@
 <?php 
 include "../../config.php";
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -107,7 +108,7 @@ h1 { text-align: center; margin: 40px 0 20px; color: #007bff; }
     while ($s = $slides->fetch_assoc()):
     ?>
     <div class="slide-card">
-        <img src="../../assets/teams/<?= htmlspecialchars($s['image']) ?>" alt="<?= htmlspecialchars($s['title']) ?>">
+        <img src="<?= htmlspecialchars(spectrum_admin_image_src($s['image'], '../../assets/teams/')) ?>" alt="<?= htmlspecialchars($s['title']) ?>">
         <div class="slide-card-content">
             <h3><?= htmlspecialchars($s['title']) ?></h3>
             <div class="actions">

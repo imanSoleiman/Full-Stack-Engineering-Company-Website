@@ -6,6 +6,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 include '../../config.php'; // DB connection
+require_once __DIR__ . '/../includes/image_upload.php';
 
 $success_message = "";
 
@@ -43,14 +44,20 @@ if(isset($_POST['save_left'])){
     $overlay_text = $_POST['overlay_text'];
 
     if(isset($_FILES['image1']) && $_FILES['image1']['name'] != ""){
-        $image_name1 = time().'_'.$_FILES['image1']['name'];
-        move_uploaded_file($_FILES['image1']['tmp_name'], '../../assets/home/'.$image_name1);
+        $image_name1 = spectrum_store_image(
+            $_FILES['image1'],
+            'home',
+            __DIR__ . '/../../assets/home/'
+        );
         $conn->query("UPDATE left_cards SET image1='$image_name1' WHERE id=1");
     }
 
     if(isset($_FILES['image2']) && $_FILES['image2']['name'] != ""){
-        $image_name2 = time().'_'.$_FILES['image2']['name'];
-        move_uploaded_file($_FILES['image2']['tmp_name'], '../../assets/home/'.$image_name2);
+        $image_name2 = spectrum_store_image(
+            $_FILES['image2'],
+            'home',
+            __DIR__ . '/../../assets/home/'
+        );
         $conn->query("UPDATE left_cards SET image2='$image_name2' WHERE id=1");
     }
 
@@ -184,13 +191,13 @@ $right_points = $conn->query("SELECT * FROM right_points");
 
         <label>Image 1</label><br>
         <?php if($left_card['image1']): ?>
-            <img src="../../assets/home/<?= $left_card['image1'] ?>" width="100"><br>
+            <img src="<?= htmlspecialchars(spectrum_admin_image_src($left_card['image1'], '../../assets/home/')) ?>" width="100"><br>
         <?php endif; ?>
         <input type="file" name="image1"><br><br>
 
         <label>Image 2</label><br>
         <?php if($left_card['image2']): ?>
-            <img src="../../assets/home/<?= $left_card['image2'] ?>" width="100"><br>
+            <img src="<?= htmlspecialchars(spectrum_admin_image_src($left_card['image2'], '../../assets/home/')) ?>" width="100"><br>
         <?php endif; ?>
         <input type="file" name="image2"><br><br>
 

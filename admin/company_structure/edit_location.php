@@ -6,13 +6,14 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 
 if (!isset($_GET['id'])) {
     die("Location ID is missing.");
 }
 
 $location_id = intval($_GET['id']);
-$uploadFolder = "../../assets/structure/";
+$uploadFolder = __DIR__ . "/../../assets/structure/";
 $message = '';
 
 // Fetch location info
@@ -30,14 +31,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $image_path_sql = '';
     if (!empty($_FILES['image']['name'])) {
-        $image_name = uniqid() . '_' . basename($_FILES['image']['name']);
-        $target = $uploadFolder . $image_name;
-        if (!is_dir($uploadFolder)) mkdir($uploadFolder, 0777, true);
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $target)) {
-            $image_path_sql = ", image_path = '$image_name'";
-            if (!empty($location['image_path']) && file_exists($uploadFolder . $location['image_path'])) {
-                unlink($uploadFolder . $location['image_path']);
-            }
+        $image_name = spectrum_store_image(
+            $_FILES['image'],
+            'structure',
+            $uploadFolder
+        );
+        $escaped_image_name = $conn->real_escape_string($image_name);
+        $image_path_sql = ", image_path = '$escaped_image_name'";
+        if (!empty($location['image_path'])) {
+            spectrum_delete_image($location['image_path'], $uploadFolder);
         }
     }
 
@@ -47,18 +49,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     mysqli_query($conn, $update_loc);
 
     if (!empty($_FILES['popup_bg']['name'])) {
-        $bg_name = uniqid() . '_' . basename($_FILES['popup_bg']['name']);
-        $bg_target = $uploadFolder . $bg_name;
-        if (!is_dir($uploadFolder)) mkdir($uploadFolder, 0777, true);
-        if (move_uploaded_file($_FILES['popup_bg']['tmp_name'], $bg_target)) {
-            if (!empty($popup['background_image_path']) && file_exists($uploadFolder . $popup['background_image_path'])) {
-                unlink($uploadFolder . $popup['background_image_path']);
-            }
-            $update_popup = "UPDATE location_details 
-                             SET background_image_path = '$bg_name' 
-                             WHERE location_id = $location_id";
-            mysqli_query($conn, $update_popup);
+        $bg_name = spectrum_store_image(
+            $_FILES['popup_bg'],
+            'structure',
+            $uploadFolder
+        );
+        if (!empty($popup['background_image_path'])) {
+            spectrum_delete_image($popup['background_image_path'], $uploadFolder);
         }
+        $escaped_bg_name = $conn->real_escape_string($bg_name);
+        $update_popup = "UPDATE location_details 
+                         SET background_image_path = '$escaped_bg_name' 
+                         WHERE location_id = $location_id";
+        mysqli_query($conn, $update_popup);
     }
 
     $message = "✅ Location updated successfully!";
@@ -165,13 +168,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <label>Current Location Image:</label>
         <?php if (!empty($location['image_path'])): ?>
-            <img src="<?= $uploadFolder . htmlspecialchars($location['image_path']) ?>" width="150">
+            <img src="<?= htmlspecialchars(spectrum_admin_image_src($location['image_path'], '../../assets/structure/')) ?>" width="150">
         <?php endif; ?>
         <input type="file" name="image" accept="image/*">
 
         <label>Current Popup Background Image:</label>
         <?php if (!empty($popup['background_image_path'])): ?>
-            <img src="<?= $uploadFolder . htmlspecialchars($popup['background_image_path']) ?>" width="150">
+            <img src="<?= htmlspecialchars(spectrum_admin_image_src($popup['background_image_path'], '../../assets/structure/')) ?>" width="150">
         <?php endif; ?>
         <input type="file" name="popup_bg" accept="image/*">
 

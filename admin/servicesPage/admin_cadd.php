@@ -1,5 +1,6 @@
 <?php
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -141,7 +142,7 @@ tr:hover {
     <textarea name="description" required><?= htmlspecialchars($section['description']) ?></textarea>
 
     <label>Current Image:</label>
-    <img src="../../assets/service_page_uploads/<?= $section['image'] ?>" alt="Section Image">
+    <img src="<?= htmlspecialchars(spectrum_admin_image_src($section['image'], '../../assets/service_page_uploads/')) ?>" alt="Section Image">
 
     <label>Change Image:</label>
     <input type="file" name="image">

@@ -6,6 +6,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 include('../../config.php');
+require_once __DIR__ . '/../includes/image_upload.php';
 
 if(!isset($_GET['category_id'])) { header("Location: index.php"); exit; }
 $category_id = $_GET['category_id'];
@@ -14,11 +15,11 @@ $category_id = $_GET['category_id'];
 if(isset($_POST['submit'])){
     $header = $_POST['header'];
     $description = $_POST['description'];
-    $imageName = $_FILES['image']['name'];
-    $tmpName = $_FILES['image']['tmp_name'];
-    $uploadDir = "../../assets/spectrum/";
-
-    move_uploaded_file($tmpName, $uploadDir.$imageName);
+    $imageName = spectrum_store_image(
+        $_FILES['image'],
+        'spectrum',
+        __DIR__ . '/../../assets/spectrum/'
+    );
 
     $stmt = $conn->prepare("INSERT INTO spectrum_images (category_id, image_name, header, description) VALUES (?,?,?,?)");
     $stmt->bind_param("isss", $category_id, $imageName, $header, $description);

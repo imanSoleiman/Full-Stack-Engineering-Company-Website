@@ -1,5 +1,6 @@
 <?php
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -56,11 +57,13 @@ if(isset($_POST['submit'])){
     $image_name = $news['image'];
 
     if(isset($_FILES['image']) && $_FILES['image']['name'] != ''){
-        $image_name = time() . "_" . basename($_FILES['image']['name']); 
-        $target_dir = "../../assets/news/";
-        if(!file_exists($target_dir)) mkdir($target_dir, 0777, true);
-        $target_file = $target_dir . $image_name;
-        move_uploaded_file($_FILES['image']['tmp_name'], $target_file);
+        $old_image = $image_name;
+        $image_name = spectrum_store_image(
+            $_FILES['image'],
+            'news',
+            __DIR__ . '/../../assets/news/'
+        );
+        spectrum_delete_image($old_image, __DIR__ . '/../../assets/news/');
     }
 
     $stmt = $conn->prepare("UPDATE news_cards SET year_id=?, category_id=?, title=?, date_day=?, date_month=?, date_year=?, image=? WHERE id=?");

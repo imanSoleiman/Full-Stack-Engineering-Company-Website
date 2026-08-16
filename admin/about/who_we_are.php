@@ -1,6 +1,7 @@
 <?php
 session_start();
 include("../../config.php");
+require_once __DIR__ . '/../includes/image_upload.php';
 
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -39,13 +40,15 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Handle images
     foreach([1,2] as $pos) {
         if (!empty($_FILES["image$pos"]["name"])) {
-            $imageName = time() . "_" . basename($_FILES["image$pos"]["name"]);
-            $target = "../../assets/about/" . $imageName;
-            move_uploaded_file($_FILES["image$pos"]["tmp_name"], $target);
+            $imageName = spectrum_store_image(
+                $_FILES["image$pos"],
+                'about',
+                __DIR__ . '/../../assets/about/'
+            );
 
             // Delete old image if exists
-            if (isset($images[$pos]) && file_exists("../../assets/about/".$images[$pos])) {
-                unlink("../../assets/about/".$images[$pos]);
+            if (isset($images[$pos])) {
+                spectrum_delete_image($images[$pos], __DIR__ . '/../../assets/about/');
             }
 
             // Update or insert
@@ -185,7 +188,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <label>Image <?= $pos ?>:</label>
         <div class="image-preview">
             <?php if(isset($images[$pos])): ?>
-                <img src="../../assets/about/<?= htmlspecialchars($images[$pos]) ?>" alt="Image <?= $pos ?>">
+                <img src="<?= htmlspecialchars(spectrum_admin_image_src($images[$pos], '../../assets/about/')) ?>" alt="Image <?= $pos ?>">
             <?php endif; ?>
             <input type="file" name="image<?= $pos ?>">
         </div>

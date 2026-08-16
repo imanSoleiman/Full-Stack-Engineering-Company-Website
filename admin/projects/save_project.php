@@ -1,5 +1,6 @@
 <?php
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -17,8 +18,11 @@ $image_path = '';
 
 // Handle image upload
 if ($image) {
-    $image_path = time() . '_' . basename($image);
-    move_uploaded_file($_FILES['image']['tmp_name'], "../../assets/projects_uploads/" . $image_path);
+    $image_path = spectrum_store_image(
+        $_FILES['image'],
+        'projects',
+        __DIR__ . '/../../assets/projects_uploads/'
+    );
 }
 
 if ($action === 'create') {

@@ -1,5 +1,6 @@
 <?php
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -25,15 +26,23 @@ if(isset($_POST['submit'])){
     $description = $_POST['description'];
 
     if($_FILES['card_image']['name']){
-        $card_image = time() . '_' . $_FILES['card_image']['name'];
-        move_uploaded_file($_FILES['card_image']['tmp_name'], '../../assets/service_page_uploads/' . $card_image);
+        $card_image = spectrum_store_image(
+            $_FILES['card_image'],
+            'services',
+            __DIR__ . '/../../assets/service_page_uploads/'
+        );
+        spectrum_delete_image($result['image'], __DIR__ . '/../../assets/service_page_uploads/');
     } else {
         $card_image = $result['image'];
     }
 
     if($_FILES['detail_image']['name']){
-        $detail_image = time() . '_' . $_FILES['detail_image']['name'];
-        move_uploaded_file($_FILES['detail_image']['tmp_name'],'../../assets/service_page_uploads/'. $detail_image);
+        $detail_image = spectrum_store_image(
+            $_FILES['detail_image'],
+            'services',
+            __DIR__ . '/../../assets/service_page_uploads/'
+        );
+        spectrum_delete_image($result['detail_image'], __DIR__ . '/../../assets/service_page_uploads/');
     } else {
         $detail_image = $result['detail_image'];
     }
@@ -141,7 +150,7 @@ button:hover {
             <label>Card Image</label>
             <input type="file" name="card_image">
             <?php if(!empty($result['image'])): ?>
-                <img src="../../assets/service_page_uploads/<?= $result['image'] ?>" width="150" alt="Card Image">
+                <img src="<?= htmlspecialchars(spectrum_admin_image_src($result['image'], '../../assets/service_page_uploads/')) ?>" width="150" alt="Card Image">
             <?php endif; ?>
         </div>
 
@@ -156,7 +165,7 @@ button:hover {
             <label>Detail Image</label>
             <input type="file" name="detail_image">
             <?php if(!empty($result['detail_image'])): ?>
-                <img src="../../assets/service_page_uploads/<?= $result['detail_image'] ?>" width="150" alt="Detail Image">
+                <img src="<?= htmlspecialchars(spectrum_admin_image_src($result['detail_image'], '../../assets/service_page_uploads/')) ?>" width="150" alt="Detail Image">
             <?php endif; ?>
         </div>
 

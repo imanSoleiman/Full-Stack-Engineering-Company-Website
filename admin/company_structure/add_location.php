@@ -6,6 +6,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 
 $message = '';
 
@@ -19,16 +20,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $message = "❌ This location ('$city, $country') was already added before!";
     } else {
         // Single upload folder
-        $uploadFolder = "../../assets/structure/";
+        $uploadFolder = __DIR__ . "/../../assets/structure/";
 
         // Upload location image
         $image_name = '';
         if (!empty($_FILES['image']['name'])) {
-            $image_name = uniqid() . '_' . basename($_FILES['image']['name']);
-            $target = $uploadFolder . $image_name;
-            if (!is_dir($uploadFolder)) mkdir($uploadFolder, 0777, true);
-            if (!move_uploaded_file($_FILES['image']['tmp_name'], $target)) {
-                $message = "❌ Failed to upload location image.";
+            try {
+                $image_name = spectrum_store_image(
+                    $_FILES['image'],
+                    'structure',
+                    $uploadFolder
+                );
+            } catch (Throwable $e) {
+                $message = "❌ " . $e->getMessage();
                 $image_name = '';
             }
         }
@@ -36,11 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Upload popup background image
         $popup_bg_name = '';
         if (!empty($_FILES['popup_bg']['name'])) {
-            $popup_bg_name = uniqid() . '_' . basename($_FILES['popup_bg']['name']);
-            $bg_target = $uploadFolder . $popup_bg_name;
-            if (!is_dir($uploadFolder)) mkdir($uploadFolder, 0777, true);
-            if (!move_uploaded_file($_FILES['popup_bg']['tmp_name'], $bg_target)) {
-                $message = "❌ Failed to upload popup background image.";
+            try {
+                $popup_bg_name = spectrum_store_image(
+                    $_FILES['popup_bg'],
+                    'structure',
+                    $uploadFolder
+                );
+            } catch (Throwable $e) {
+                $message = "❌ " . $e->getMessage();
                 $popup_bg_name = '';
             }
         }

@@ -6,6 +6,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 include('../../config.php'); // your database connection
+require_once __DIR__ . '/../includes/image_upload.php';
 
 // Fetch existing data
 $result = $conn->query("SELECT * FROM company_structure WHERE id = 1");
@@ -17,9 +18,11 @@ if(isset($_POST['update'])) {
 
     // Handle image upload
     if($_FILES['background_image']['name']) {
-        $imageName = time() . '_' . $_FILES['background_image']['name'];
-        $targetDir = "../../assets/structure/" . $imageName; // <-- new path
-        move_uploaded_file($_FILES['background_image']['tmp_name'], $targetDir);
+        $imageName = spectrum_store_image(
+            $_FILES['background_image'],
+            'structure',
+            __DIR__ . '/../../assets/structure/'
+        );
     } else {
         $imageName = $data['background_image']; // keep old image
     }

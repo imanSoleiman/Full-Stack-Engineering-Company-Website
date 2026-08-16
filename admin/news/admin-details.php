@@ -1,5 +1,6 @@
 <?php
 include('../../config.php');
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -153,7 +154,7 @@ $comments = $conn->query("SELECT * FROM news_comments WHERE news_id=$news_id ORD
         <p><strong>Title:</strong> <?= htmlspecialchars($news['title']) ?></p>
         <p><strong>Date:</strong> <?= $news['date_day'] . '/' . $news['date_month'] . '/' . $news['date_year'] ?></p>
         <p><strong>Image:</strong></p>
-        <img src="../../assets/news/<?= $news['image'] ?>" alt="News Image">
+        <img src="<?= htmlspecialchars(spectrum_admin_image_src($news['image'], '../../assets/news/')) ?>" alt="News Image">
     </div>
 
     <!-- News Sections -->

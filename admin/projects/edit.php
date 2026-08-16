@@ -1,5 +1,6 @@
 <?php
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -120,7 +121,7 @@ button:hover {
         </select>
 
         <label>Current Image:</label>
-        <img src="../../assets/projects_uploads/<?= htmlspecialchars($project['image_path']) ?>" alt="Project Image" class="current-image">
+        <img src="<?= htmlspecialchars(spectrum_admin_image_src($project['image_path'], '../../assets/projects_uploads/')) ?>" alt="Project Image" class="current-image">
 
         <label for="image">Change Image:</label>
         <input type="file" id="image" name="image">

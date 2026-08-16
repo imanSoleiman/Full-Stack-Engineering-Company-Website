@@ -1,5 +1,6 @@
 <?php
 include('../../config.php');
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -17,11 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Handle image upload
     if (!empty($_FILES['image']['name'])) {
-        $targetDir = "../../assets/teams/";
-        $fileName = time() . "_" . basename($_FILES['image']['name']);
-        $targetFile = $targetDir . $fileName;
-        move_uploaded_file($_FILES['image']['tmp_name'], $targetFile);
-        $imagePath = "assets/teams/" . $fileName;
+        $imagePath = spectrum_store_image(
+            $_FILES['image'],
+            'teams',
+            __DIR__ . '/../../assets/teams/',
+            'assets/teams/'
+        );
     }
 
     $headingsJson = json_encode($headings);
@@ -232,7 +234,7 @@ function removeHeading(btn) {
         <?php if($data['image_path']): ?>
         <div class="current-image">
             <small>Current Image:</small><br>
-            <img src="../../<?= $data['image_path'] ?>" alt="Current Image">
+            <img src="<?= htmlspecialchars(spectrum_admin_image_src($data['image_path'], '../../')) ?>" alt="Current Image">
         </div>
         <?php endif; ?>
 

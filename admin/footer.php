@@ -1,5 +1,6 @@
 <?php
 include '../config.php';
+require_once __DIR__ . '/includes/image_upload.php';
 
 // Fetch footer content
 $result = $conn->query("SELECT * FROM footer_content WHERE id=1");
@@ -14,19 +15,19 @@ if (!$row) {
 }
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
+    $logoUploadError = null;
+
     // Handle logo upload safely
     if(isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK){
-        $originalName = basename($_FILES['logo']['name']);
-        $extension = pathinfo($originalName, PATHINFO_EXTENSION);
-        $logoName = 'logo_' . time() . '.' . $extension;
-
-        $uploadDir = '../assets/home/';
-        if(!is_dir($uploadDir)){
-            mkdir($uploadDir, 0755, true);
-        }
-
-        if(!move_uploaded_file($_FILES['logo']['tmp_name'], $uploadDir . $logoName)){
-            echo "<p style='color:red;'>Failed to upload logo.</p>";
+        try {
+            $logoName = spectrum_store_image(
+                $_FILES['logo'],
+                'home',
+                __DIR__ . '/../assets/home/'
+            );
+        } catch (Throwable $e) {
+            $logoUploadError = $e->getMessage();
+            echo "<p style='color:red;'>" . htmlspecialchars($logoUploadError) . "</p>";
             $logoName = $row['logo'];
         }
     } else {
@@ -44,7 +45,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $result = $conn->query("SELECT * FROM footer_content WHERE id=1");
     $row = $result->fetch_assoc();
 
-    echo "<p style='color:green;'>Footer updated successfully!</p>";
+    if ($logoUploadError === null) {
+        echo "<p style='color:green;'>Footer updated successfully!</p>";
+    } else {
+        echo "<p style='color:#b45309;'>Footer text was updated, but the logo image was not changed.</p>";
+    }
 }
 ?>
 
@@ -195,7 +200,7 @@ function previewLogo(input) {
         <!-- Current Logo -->
         <label>Current Logo:</label>
         <div class="current-logo">
-            <img id="logo-preview" src="../assets/home/<?= htmlspecialchars($row['logo']) ?>" alt="Current Logo">
+            <img id="logo-preview" src="<?= htmlspecialchars(spectrum_admin_image_src($row['logo'], '../assets/home/')) ?>" alt="Current Logo">
             <span><?= htmlspecialchars($row['logo']) ?></span>
         </div>
 

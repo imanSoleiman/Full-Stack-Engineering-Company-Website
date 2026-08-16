@@ -6,6 +6,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 
 // Fetch current data
 $result = $conn->query("SELECT * FROM corporate_third_section WHERE id = 1");
@@ -25,15 +26,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     $image_path = $data['image_path'];
     if (!empty($_FILES['image']['name'])) {
-        $upload_dir = "../../assets/corporate/";
-        $new_image_name = time() . "_" . basename($_FILES["image"]["name"]);
-        $target_file = $upload_dir . $new_image_name;
-
-        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
-        if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
-            if (!empty($image_path) && file_exists($image_path)) unlink($image_path);
-            $image_path = $target_file;
-        }
+        $old_image_path = $image_path;
+        $image_path = spectrum_store_image(
+            $_FILES['image'],
+            'corporate',
+            __DIR__ . '/../../assets/corporate/',
+            '../../assets/corporate/'
+        );
+        spectrum_delete_image($old_image_path, __DIR__ . '/../../assets/corporate/');
     }
 
     $stmt = $conn->prepare("UPDATE corporate_third_section SET header_title=?, paragraph1=?, paragraph2=?, image_path=?, card1_title=?, card1_text=?, card2_title=?, card2_text=? WHERE id=1");
@@ -178,7 +178,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <label>Change Image:</label>
         <input type="file" name="image">
         <?php if (!empty($data['image_path'])): ?>
-            <img src="<?= htmlspecialchars($data['image_path']) ?>" class="preview">
+            <img src="<?= htmlspecialchars(spectrum_admin_image_src($data['image_path'], '../../assets/corporate/')) ?>" class="preview">
         <?php endif; ?>
 
         <button type="submit">Save Changes</button>

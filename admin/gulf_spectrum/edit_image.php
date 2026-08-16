@@ -6,6 +6,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 include('../../config.php'); // Your DB connection
+require_once __DIR__ . '/../includes/image_upload.php';
 
 // Get image ID from URL
 if(!isset($_GET['id'])){
@@ -31,17 +32,14 @@ if(isset($_POST['submit'])){
 
     // Check if a new image was uploaded
     if(isset($_FILES['image']) && $_FILES['image']['name'] != ""){
-        $imageName = $_FILES['image']['name'];
-        $tmpName = $_FILES['image']['tmp_name'];
-        $uploadDir = "../../assets/gulfspectrum/";
+        $imageName = spectrum_store_image(
+            $_FILES['image'],
+            'gulfspectrum',
+            __DIR__ . '/../../assets/gulfspectrum/'
+        );
 
         // Delete old image file
-        if(file_exists($uploadDir.$image['image_name'])){
-            unlink($uploadDir.$image['image_name']);
-        }
-
-        // Move new file
-        move_uploaded_file($tmpName, $uploadDir.$imageName);
+        spectrum_delete_image($image['image_name'], __DIR__ . '/../../assets/gulfspectrum/');
     } else {
         // Keep old image if no new upload
         $imageName = $image['image_name'];
@@ -159,7 +157,7 @@ a.back-btn:hover {
         <label>Replace Image (optional):</label>
         <input type="file" name="image" accept="image/*">
         <small>Current image:</small><br>
-        <img src="../../assets/gulfspectrum/<?= htmlspecialchars($image['image_name']) ?>" class="preview">
+        <img src="<?= htmlspecialchars(spectrum_admin_image_src($image['image_name'], '../../assets/gulfspectrum/')) ?>" class="preview">
     </div>
 
     <button type="submit" name="submit"><i class="fa fa-save"></i> Update Image</button>

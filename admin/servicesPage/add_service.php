@@ -1,5 +1,6 @@
 <?php
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -27,18 +28,24 @@ if(isset($_POST['submit'])){
     }
 
     $card_image = $_FILES['card_image']['name'];
-    $card_tmp = $_FILES['card_image']['tmp_name'];
     if(!validateImage($card_image, $allowed_extensions)){
         die("Card image must be JPG, JPEG, PNG, or WEBP.");
     }
-    move_uploaded_file($card_tmp, $uploadDir . $card_image);
+    $card_image = spectrum_store_image(
+        $_FILES['card_image'],
+        'services',
+        __DIR__ . '/../../assets/service_page_uploads/'
+    );
 
     $detail_image = $_FILES['detail_image']['name'];
-    $detail_tmp = $_FILES['detail_image']['tmp_name'];
     if(!validateImage($detail_image, $allowed_extensions)){
         die("Detail image must be JPG, JPEG, PNG, or WEBP.");
     }
-    move_uploaded_file($detail_tmp, $uploadDir . $detail_image);
+    $detail_image = spectrum_store_image(
+        $_FILES['detail_image'],
+        'services',
+        __DIR__ . '/../../assets/service_page_uploads/'
+    );
 
     $stmt = $conn->prepare("INSERT INTO services_details (title, description, image, section_title, list_items) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("sssss", $detail_title, $description, $detail_image, $section_title, $list_items);

@@ -6,6 +6,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 include('../../config.php'); // Database connection ($conn)
+require_once __DIR__ . '/../includes/image_upload.php';
 
 $message = "";
 
@@ -39,11 +40,11 @@ if(isset($_POST['add_card'])){
 
     $img_name = "";
     if(isset($_FILES['image']) && $_FILES['image']['error'] == 0){
-        $upload_dir = "../../assets/devision/";
-        if(!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
-
-        $img_name = time() . "_" . basename($_FILES['image']['name']);
-        move_uploaded_file($_FILES['image']['tmp_name'], $upload_dir . $img_name);
+        $img_name = spectrum_store_image(
+            $_FILES['image'],
+            'devision',
+            __DIR__ . '/../../assets/devision/'
+        );
     }
 
     $stmt = $conn->prepare("INSERT INTO division_cards (title_front, image_path, header_back, description_back) VALUES (?, ?, ?, ?)");
@@ -61,8 +62,7 @@ if(isset($_GET['delete_card'])){
 
     $img = $conn->query("SELECT image_path FROM division_cards WHERE id=$id")->fetch_assoc();
     if(!empty($img['image_path'])){
-        $img_file = "../../assets/devision/" . $img['image_path'];
-        if(file_exists($img_file)) unlink($img_file);
+        spectrum_delete_image($img['image_path'], __DIR__ . '/../../assets/devision/');
     }
 
     $stmt = $conn->prepare("DELETE FROM division_cards WHERE id=?");
@@ -82,16 +82,15 @@ if(isset($_POST['edit_card'])){
     $desc_back = $_POST['description_back'];
 
     if(isset($_FILES['image']) && $_FILES['image']['error'] == 0){
-        $upload_dir = "../../assets/devision/";
-        if(!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
-
-        $img_name = time() . "_" . basename($_FILES['image']['name']);
-        move_uploaded_file($_FILES['image']['tmp_name'], $upload_dir . $img_name);
+        $img_name = spectrum_store_image(
+            $_FILES['image'],
+            'devision',
+            __DIR__ . '/../../assets/devision/'
+        );
 
         $old_img = $conn->query("SELECT image_path FROM division_cards WHERE id=$id")->fetch_assoc();
         if(!empty($old_img['image_path'])){
-            $old_file = "../../assets/devision/" . $old_img['image_path'];
-            if(file_exists($old_file)) unlink($old_file);
+            spectrum_delete_image($old_img['image_path'], __DIR__ . '/../../assets/devision/');
         }
 
         $stmt = $conn->prepare("UPDATE division_cards SET title_front=?, image_path=?, header_back=?, description_back=? WHERE id=?");
@@ -280,7 +279,7 @@ button:hover {
     <?php while($card = $cards_result->fetch_assoc()): ?>
     <div class="card-preview">
         <?php if(!empty($card['image_path'])): ?>
-            <img src="../../assets/devision/<?= htmlspecialchars($card['image_path']) ?>" alt="<?= htmlspecialchars($card['title_front']) ?>">
+            <img src="<?= htmlspecialchars(spectrum_admin_image_src($card['image_path'], '../../assets/devision/')) ?>" alt="<?= htmlspecialchars($card['title_front']) ?>">
         <?php else: ?>
             <div style="width:100px;height:100px;background:#ccc;display:flex;align-items:center;justify-content:center;">No Image</div>
         <?php endif; ?>

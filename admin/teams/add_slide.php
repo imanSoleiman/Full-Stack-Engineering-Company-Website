@@ -1,12 +1,15 @@
 <?php include "../../config.php"; ?>
+require_once __DIR__ . '/../includes/image_upload.php';
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['title'];
 
     // Handle image upload
-    $fileName = time() . "_" . basename($_FILES["image"]["name"]);
-    $target = "../../assets/teams/" . $fileName;
-    move_uploaded_file($_FILES["image"]["tmp_name"], $target);
+    $fileName = spectrum_store_image(
+        $_FILES['image'],
+        'teams',
+        __DIR__ . '/../../assets/teams/'
+    );
 
     $stmt = $conn->prepare("INSERT INTO professional_slides (title, image) VALUES (?, ?)");
     $stmt->bind_param("ss", $title, $fileName);

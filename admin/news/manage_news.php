@@ -1,5 +1,6 @@
 <?php
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -57,7 +58,7 @@ $result = $conn->query("
     <td><?= $row['date_day'] . "-" . $row['date_month'] . "-" . $row['date_year'] ?></td>
     <td><?= $row['year'] ?></td>
     <td><?= htmlspecialchars($row['category_name'] ?? 'Uncategorized') ?></td> <!-- Display category -->
-    <td><img src="../../assets/news/<?= $row['image'] ?>" width="100"></td>
+    <td><img src="<?= htmlspecialchars(spectrum_admin_image_src($row['image'], '../../assets/news/')) ?>" width="100"></td>
     <td>
         <a href="edit_news.php?id=<?= $row['id'] ?>" class="button">Edit</a>
         <a href="?delete=<?= $row['id'] ?>" class="button red" onclick="return confirm('Are you sure?')">Delete</a>

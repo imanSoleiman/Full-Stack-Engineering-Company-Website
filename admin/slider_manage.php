@@ -1,6 +1,7 @@
 <?php
 session_start();
 include('../config.php');
+require_once __DIR__ . '/includes/image_upload.php';
 
 // Only logged-in admins can access
 if (!isset($_SESSION['admin_logged_in'])) {
@@ -14,7 +15,6 @@ $errors = [];
 $success = '';
 
 $uploadDir = __DIR__ . '/../assets/home';
-if (!is_dir($uploadDir)) mkdir($uploadDir, 0775, true);
 
 // Handle POST actions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -38,18 +38,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (!$errors) {
-            $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-            $basename = bin2hex(random_bytes(8)) . '.' . strtolower($ext);
-            $destPath = $uploadDir . '/' . $basename;
+            try {
+                $basename = spectrum_store_image(
+                    $_FILES['image'],
+                    'home',
+                    $uploadDir
+                );
 
-            if (!move_uploaded_file($_FILES['image']['tmp_name'], $destPath)) {
-                $errors[] = 'Failed to save image.';
-            } else {
                 $stmt = $mysqli->prepare("INSERT INTO slider_items (title, description, image_path, sort_order, is_active) VALUES (?, ?, ?, ?, ?)");
                 $stmt->bind_param('sssii', $title, $desc, $basename, $sortOrder, $isActive);
                 if ($stmt->execute()) $success = 'Slide added successfully.';
                 else $errors[] = 'Insert failed: ' . $stmt->error;
                 $stmt->close();
+            } catch (Throwable $e) {
+                $errors[] = $e->getMessage();
             }
         }
     }
@@ -84,8 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->execute();
         $res = $stmt->get_result();
         if ($row = $res->fetch_assoc()) {
-            $file = $uploadDir . '/' . $row['image_path'];
-            if (is_file($file)) @unlink($file);
+            spectrum_delete_image($row['image_path'], $uploadDir);
         }
         $stmt->close();
 
@@ -109,23 +110,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sql = "UPDATE slider_items SET title=?, description=?, sort_order=?, is_active=? WHERE id=?";
 
         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-            $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-            $basename = bin2hex(random_bytes(8)) . '.' . strtolower($ext);
-            $destPath = $uploadDir . '/' . $basename;
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $destPath)) {
+            try {
+                $basename = spectrum_store_image(
+                    $_FILES['image'],
+                    'home',
+                    $uploadDir
+                );
+
                 $stmtImg = $mysqli->prepare("SELECT image_path FROM slider_items WHERE id=?");
                 $stmtImg->bind_param('i', $id);
                 $stmtImg->execute();
                 $resImg = $stmtImg->get_result();
                 if ($rowImg = $resImg->fetch_assoc()) {
-                    $oldFile = $uploadDir . '/' . $rowImg['image_path'];
-                    if (is_file($oldFile)) @unlink($oldFile);
+                    spectrum_delete_image($rowImg['image_path'], $uploadDir);
                 }
                 $stmtImg->close();
 
                 $sql = "UPDATE slider_items SET title=?, description=?, sort_order=?, is_active=?, image_path=? WHERE id=?";
                 $params = [$title, $desc, $sortOrder, $isActive, $basename, $id];
                 $types = 'ssiisi';
+            } catch (Throwable $e) {
+                $errors[] = $e->getMessage();
             }
         }
 
@@ -282,7 +287,7 @@ img{max-height:60px; border-radius:4px;}
     <?php foreach ($slides as $s): ?>
         <?php if ($s['is_active']): ?>
         <div class="carousel-item">
-            <img src="../assets/home/<?= htmlspecialchars($s['image_path']) ?>" alt="">
+            <img src="<?= htmlspecialchars(spectrum_admin_image_src($s['image_path'], '../assets/home/')) ?>" alt="">
             <p><?= htmlspecialchars($s['title']) ?></p>
         </div>
         <?php endif; ?>
@@ -305,7 +310,7 @@ img{max-height:60px; border-radius:4px;}
 <div class="slide-card">
     <div class="slide-image">
         <?php if ($s['image_path']): ?>
-        <img src="../assets/home/<?= htmlspecialchars($s['image_path']) ?>" alt="<?= htmlspecialchars($s['title']) ?>">
+        <img src="<?= htmlspecialchars(spectrum_admin_image_src($s['image_path'], '../assets/home/')) ?>" alt="<?= htmlspecialchars($s['title']) ?>">
         <?php endif; ?>
     </div>
     <div class="slide-info">

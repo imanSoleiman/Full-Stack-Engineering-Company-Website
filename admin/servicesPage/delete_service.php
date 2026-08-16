@@ -1,5 +1,6 @@
 <?php
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -29,11 +30,11 @@ if (!$row) {
 }
 
 // Delete images
-if (file_exists('../../uploads/services/' . $row['card_image'])) {
-    unlink('../../uploads/services/' . $row['card_image']);
+if (!empty($row['card_image'])) {
+    spectrum_delete_image($row['card_image'], __DIR__ . '/../../assets/service_page_uploads/');
 }
-if (file_exists('../../uploads/services/details/' . $row['detail_image'])) {
-    unlink('../../uploads/services/details/' . $row['detail_image']);
+if (!empty($row['detail_image'])) {
+    spectrum_delete_image($row['detail_image'], __DIR__ . '/../../assets/service_page_uploads/');
 }
 
 // Delete detail page first

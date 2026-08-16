@@ -1,5 +1,6 @@
 <?php  
 include('../../config.php');
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -17,16 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $background_image = $data['background_image']; // Keep old image if no new upload
 
     if (!empty($_FILES['background_image']['name'])) {
-        $target_dir = __DIR__ . "/../../assets/service_page_uploads/";
-        if (!is_dir($target_dir)) mkdir($target_dir, 0755, true);
-
-        $fileName = time() . "_" . basename($_FILES["background_image"]["name"]);
-        $target_file = $target_dir . $fileName;
-
-        if (move_uploaded_file($_FILES["background_image"]["tmp_name"], $target_file)) {
-            $background_image = $fileName;
-        } else {
-            echo "<p style='color:red;'>Error uploading file.</p>";
+        try {
+            $background_image = spectrum_store_image(
+                $_FILES['background_image'],
+                'services',
+                __DIR__ . '/../../assets/service_page_uploads/'
+            );
+        } catch (Throwable $e) {
+            echo "<p style='color:red;'>" . htmlspecialchars($e->getMessage()) . "</p>";
         }
     }
 
@@ -124,7 +123,7 @@ button:hover { background: #0056b3; }
         <label>Background Image:</label>
         <input type="file" name="background_image">
         <?php if (!empty($data['background_image'])): ?>
-            <img src="../../assets/service_page_uploads/<?php echo $data['background_image']; ?>" alt="Background Image">
+            <img src="<?php echo htmlspecialchars(spectrum_admin_image_src($data['background_image'], '../../assets/service_page_uploads/')); ?>" alt="Background Image">
         <?php endif; ?>
 
         <label>Description:</label>

@@ -6,6 +6,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 include('../../config.php');
+require_once __DIR__ . '/../includes/image_upload.php';
 
 if(!isset($_GET['category_id'])) { header("Location: index.php"); exit; }
 $category_id = $_GET['category_id'];
@@ -126,7 +127,7 @@ img.preview {
         <td><?= $img['id'] ?></td>
         <td><?= htmlspecialchars($img['header']) ?></td>
         <td><?= htmlspecialchars($img['description']) ?></td>
-        <td><img src="../../assets/spectrum/<?= htmlspecialchars($img['image_name']) ?>" class="preview"></td>
+        <td><img src="<?= htmlspecialchars(spectrum_admin_image_src($img['image_name'], '../../assets/spectrum/')) ?>" class="preview"></td>
         <td class="actions">
             <a href="edit_image.php?id=<?= $img['id'] ?>" class="edit"><i class="fa fa-edit"></i> Edit</a>
             <a href="delete_image.php?id=<?= $img['id'] ?>&category_id=<?= $category_id ?>" class="delete" onclick="return confirm('Delete this image?')"><i class="fa fa-trash"></i> Delete</a>

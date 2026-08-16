@@ -1,5 +1,6 @@
 <?php
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
@@ -39,12 +40,13 @@ if(isset($_POST['submit'])){
 
     // Handle image upload
     if(isset($_FILES['image']) && $_FILES['image']['error'] === 0){
-        $image_name = time() . "_" . basename($_FILES['image']['name']); 
-        $target_dir = "../../assets/news/";
-        if(!file_exists($target_dir)) mkdir($target_dir, 0777, true);
-        $target_file = $target_dir . $image_name;
+        try {
+            $image_name = spectrum_store_image(
+                $_FILES['image'],
+                'news',
+                __DIR__ . '/../../assets/news/'
+            );
 
-        if(move_uploaded_file($_FILES['image']['tmp_name'], $target_file)){
             $stmt = $conn->prepare("INSERT INTO news_cards (year_id, category_id, title, date_day, date_month, date_year, image) VALUES (?, ?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("iisiiis", $year_id, $category_id, $title, $day, $month, $year, $image_name);
             if($stmt->execute()){
@@ -52,8 +54,8 @@ if(isset($_POST['submit'])){
             } else {
                 echo "<p style='color:red;'>Database insert failed: " . $stmt->error . "</p>";
             }
-        } else {
-            echo "<p style='color:red;'>Failed to upload image!</p>";
+        } catch (Throwable $e) {
+            echo "<p style='color:red;'>Image upload failed: " . htmlspecialchars($e->getMessage()) . "</p>";
         }
     } else {
         echo "<p style='color:red;'>No image selected or upload error!</p>";

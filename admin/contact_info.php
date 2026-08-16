@@ -1,5 +1,6 @@
 <?php
 include('../config.php');
+require_once __DIR__ . '/includes/image_upload.php';
 
 // Make sure row with id=1 exists
 $conn->query("INSERT IGNORE INTO contact_info (id, address, image_path) VALUES (1, '', '')");
@@ -10,12 +11,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle image upload
     $fileName = null;
     if (!empty($_FILES['image']['name'])) {
-        $targetDir = "../assets/contact/"; // save in assets/contact
-        if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
-
-        $fileName = time() . "_" . basename($_FILES["image"]["name"]); // unique name
-        $targetFile = $targetDir . $fileName;
-        move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile);
+        try {
+            $fileName = spectrum_store_image(
+                $_FILES['image'],
+                'contact',
+                __DIR__ . '/../assets/contact/'
+            );
+        } catch (Throwable $e) {
+            die("Image upload failed: " . htmlspecialchars($e->getMessage()));
+        }
     }
 
     // Update DB (save only filename, not full path)
@@ -50,7 +54,7 @@ $contact = $query->fetch_assoc();
     <label>Change Image:</label><br>
     <input type="file" name="image"><br>
     <?php if (!empty($contact['image_path'])): ?>
-      <img src="../assets/contact/<?php echo htmlspecialchars($contact['image_path']); ?>" 
+      <img src="<?php echo htmlspecialchars(spectrum_admin_image_src($contact['image_path'], '../assets/contact/')); ?>" 
            alt="Current Image" width="200">
     <?php endif; ?>
     <br><br>

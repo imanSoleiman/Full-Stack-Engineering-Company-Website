@@ -6,8 +6,9 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 
-$uploadFolder = '../../assets/structure/';
+$uploadFolder = __DIR__ . '/../../assets/structure/';
 
 // Fetch existing data
 $result = mysqli_query($conn, "SELECT * FROM company_structure WHERE id=1");
@@ -19,9 +20,11 @@ if(isset($_POST['update'])) {
 
     // Handle image upload
     if($_FILES['background_image']['name']) {
-        $imageName = time() . '_' . $_FILES['background_image']['name'];
-        $targetPath = $uploadFolder . $imageName;
-        move_uploaded_file($_FILES['background_image']['tmp_name'], $targetPath);
+        $imageName = spectrum_store_image(
+            $_FILES['background_image'],
+            'structure',
+            $uploadFolder
+        );
     } else {
         $imageName = $company['background_image'];
     }
@@ -51,7 +54,7 @@ if(isset($_POST['update'])) {
     <label>Background Image:</label><br>
     <input type="file" name="background_image"><br>
     <?php if(!empty($company['background_image'])): ?>
-        <img src="<?= $uploadFolder . htmlspecialchars($company['background_image']) ?>" width="200" alt="Current Image" style="margin-top:10px;">
+        <img src="<?= htmlspecialchars(spectrum_admin_image_src($company['background_image'], '../../assets/structure/')) ?>" width="200" alt="Current Image" style="margin-top:10px;">
     <?php endif; ?>
     <br><br>
 

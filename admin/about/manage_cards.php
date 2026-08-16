@@ -1,6 +1,7 @@
 <?php
 session_start();
 include("../../config.php");
+require_once __DIR__ . '/../includes/image_upload.php';
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
     exit;
@@ -19,7 +20,7 @@ $counter = 1;
 <?php while($row = $result->fetch_assoc()): ?>
 <tr>
   <td><?= $counter++ ?></td>
-  <td><img src="../../assets/about/<?= $row['image_path'] ?>" width="80"></td>
+  <td><img src="<?= htmlspecialchars(spectrum_admin_image_src($row['image_path'], '../../assets/about/')) ?>" width="80"></td>
   <td><?= $row['title'] ?></td>
   <td><?= $row['description'] ?></td>
   <td>

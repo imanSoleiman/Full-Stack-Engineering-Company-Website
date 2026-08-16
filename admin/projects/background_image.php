@@ -1,5 +1,6 @@
 <?php
 include '../../config.php'; 
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -23,26 +24,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Right Image Upload
     $right_image = $data['right_image'];
     if (!empty($_FILES['right_image']['name'])) {
-        $targetDir = "../../assets/projects_uploads/";
-        if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
-        $fileName = time() . "_" . basename($_FILES['right_image']['name']);
-        if (move_uploaded_file($_FILES['right_image']['tmp_name'], $targetDir . $fileName)) {
-            $right_image = $fileName;
-        } else {
-            $message = "❌ Right image upload failed!";
+        try {
+            $right_image = spectrum_store_image(
+                $_FILES['right_image'],
+                'projects',
+                __DIR__ . '/../../assets/projects_uploads/'
+            );
+        } catch (Throwable $e) {
+            $message = "❌ " . $e->getMessage();
         }
     }
 
     // Background Image Upload
     $background_image = $data['background_image'];
     if (!empty($_FILES['background_image']['name'])) {
-        $targetDir = "../../assets/projects_uploads/";
-        if (!is_dir($targetDir)) mkdir($targetDir, 0777, true);
-        $fileName = time() . "_" . basename($_FILES['background_image']['name']);
-        if (move_uploaded_file($_FILES['background_image']['tmp_name'], $targetDir . $fileName)) {
-            $background_image = $fileName;
-        } else {
-            $message = "❌ Background image upload failed!";
+        try {
+            $background_image = spectrum_store_image(
+                $_FILES['background_image'],
+                'projects',
+                __DIR__ . '/../../assets/projects_uploads/'
+            );
+        } catch (Throwable $e) {
+            $message = "❌ " . $e->getMessage();
         }
     }
 
@@ -166,7 +169,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <input type="file" name="right_image">
         <?php if($data['right_image']): ?>
             <div class="img-preview">
-                <img src="../../assets/projects_uploads/<?= htmlspecialchars($data['right_image']) ?>" width="150">
+                <img src="<?= htmlspecialchars(spectrum_admin_image_src($data['right_image'], '../../assets/projects_uploads/')) ?>" width="150">
             </div>
         <?php endif; ?>
 
@@ -177,7 +180,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <input type="file" name="background_image">
         <?php if($data['background_image']): ?>
             <div class="img-preview">
-                <img src="../../assets/projects_uploads/<?= htmlspecialchars($data['background_image']) ?>" width="150">
+                <img src="<?= htmlspecialchars(spectrum_admin_image_src($data['background_image'], '../../assets/projects_uploads/')) ?>" width="150">
             </div>
         <?php endif; ?>
 

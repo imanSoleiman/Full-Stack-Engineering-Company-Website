@@ -1,5 +1,6 @@
 <?php
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 
 // ========================
 // Handle Category Add/Delete
@@ -120,7 +121,7 @@ input[type="checkbox"] { transform: scale(1.2); margin-right: 5px; cursor: point
 
     <td><?= htmlspecialchars($row['name']) ?></td>
     <td><?= htmlspecialchars($row['category_name']) ?></td>
-    <td><img src="../../assets/projects_uploads/<?= htmlspecialchars($row['image_path']); ?>" alt="Project Image"></td>
+    <td><img src="<?= htmlspecialchars(spectrum_admin_image_src($row['image_path'], '../../assets/projects_uploads/')) ?>" alt="Project Image"></td>
     <td>
         <form action="toggle_home.php" method="post">
             <input type="hidden" name="id" value="<?= $row['id'] ?>">

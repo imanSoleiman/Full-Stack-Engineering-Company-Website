@@ -1,5 +1,6 @@
 <?php
 include("../../config.php");
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -36,15 +37,21 @@ if(isset($_POST['add_card'])){
     $description = trim($_POST['description']);
 
     if(isset($_FILES['image']) && $_FILES['image']['name'] != ""){
-        $imageName = time() . "_" . basename($_FILES["image"]["name"]);
-        $target = "../../assets/about/" . $imageName;
-        move_uploaded_file($_FILES["image"]["tmp_name"], $target);
+        try {
+            $imageName = spectrum_store_image(
+                $_FILES['image'],
+                'about',
+                __DIR__ . '/../../assets/about/'
+            );
 
-        $stmt = $conn->prepare("INSERT INTO our_story_cards (title, description, image_path) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $title, $description, $imageName);
-        $stmt->execute();
+            $stmt = $conn->prepare("INSERT INTO our_story_cards (title, description, image_path) VALUES (?, ?, ?)");
+            $stmt->bind_param("sss", $title, $description, $imageName);
+            $stmt->execute();
 
-        $success_message = "Card added successfully!";
+            $success_message = "Card added successfully!";
+        } catch (Throwable $e) {
+            $success_message = "Image upload failed: " . $e->getMessage();
+        }
     }
 }
 
@@ -52,8 +59,8 @@ if(isset($_POST['add_card'])){
 if(isset($_GET['delete'])){
     $id = intval($_GET['delete']);
     $card = $conn->query("SELECT image_path FROM our_story_cards WHERE id=$id")->fetch_assoc();
-    if($card && file_exists("../../assets/about/".$card['image_path'])){
-        unlink("../../assets/about/".$card['image_path']);
+    if($card){
+        spectrum_delete_image($card['image_path'], __DIR__ . '/../../assets/about/');
     }
     $conn->query("DELETE FROM our_story_cards WHERE id=$id");
     $success_message = "Card deleted successfully!";
@@ -72,16 +79,23 @@ if(isset($_POST['edit_card'])){
     $description = trim($_POST['description']);
 
     if(!empty($_FILES['image']['name'])){
-        $imageName = time() . "_" . basename($_FILES['image']['name']);
-        $target = "../../assets/about/".$imageName;
-        if(move_uploaded_file($_FILES['image']['tmp_name'], $target)){
+        try {
+            $imageName = spectrum_store_image(
+                $_FILES['image'],
+                'about',
+                __DIR__ . '/../../assets/about/'
+            );
+
             $old = $conn->query("SELECT image_path FROM our_story_cards WHERE id=$id")->fetch_assoc();
-            if($old && file_exists("../../assets/about/".$old['image_path'])){
-                unlink("../../assets/about/".$old['image_path']);
+            if($old){
+                spectrum_delete_image($old['image_path'], __DIR__ . '/../../assets/about/');
             }
+
             $stmt = $conn->prepare("UPDATE our_story_cards SET title=?, description=?, image_path=? WHERE id=?");
             $stmt->bind_param("sssi", $title, $description, $imageName, $id);
             $stmt->execute();
+        } catch (Throwable $e) {
+            $success_message = "Image upload failed: " . $e->getMessage();
         }
     } else {
         $stmt = $conn->prepare("UPDATE our_story_cards SET title=?, description=? WHERE id=?");
@@ -159,7 +173,7 @@ img { border-radius: 5px; }
     <textarea name="description" required><?= htmlspecialchars($edit_card['description']) ?></textarea>
     <label>Image</label>
     <?php if(!empty($edit_card['image_path'])): ?>
-        <img src="../../assets/about/<?= $edit_card['image_path'] ?>" width="100"><br>
+        <img src="<?= htmlspecialchars(spectrum_admin_image_src($edit_card['image_path'], '../../assets/about/')) ?>" width="100"><br>
     <?php endif; ?>
     <input type="file" name="image">
     <button type="submit" name="edit_card">Update Card</button>
@@ -203,7 +217,7 @@ img { border-radius: 5px; }
 <?php $counter = 1; while($row = $result->fetch_assoc()): ?>
 <tr>
 <td><?= $counter++ ?></td>
-<td><img src="../../assets/about/<?= $row['image_path'] ?>" width="80"></td>
+<td><img src="<?= htmlspecialchars(spectrum_admin_image_src($row['image_path'], '../../assets/about/')) ?>" width="80"></td>
 <td><?= htmlspecialchars($row['title']) ?></td>
 <td><?= htmlspecialchars($row['description']) ?></td>
 <td>

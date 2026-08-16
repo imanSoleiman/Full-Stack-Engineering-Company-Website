@@ -1,5 +1,6 @@
 <?php
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -179,7 +180,7 @@ input:checked + .slider:before { transform: translateX(26px); }
     $monthName = date('M', mktime(0,0,0,$n['date_month'],10));
 ?>
     <div class="news-card">
-        <img src="../../assets/news/<?= $n['image'] ?>" alt="<?= htmlspecialchars($n['title']) ?>">
+        <img src="<?= htmlspecialchars(spectrum_admin_image_src($n['image'], '../../assets/news/')) ?>" alt="<?= htmlspecialchars($n['title']) ?>">
         <div class="news-card-content">
             <h3><?= htmlspecialchars($n['title']) ?></h3>
             <p>

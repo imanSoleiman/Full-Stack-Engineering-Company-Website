@@ -1,5 +1,6 @@
 <?php 
 include "../../config.php"; 
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -16,11 +17,12 @@ if(isset($_POST['save_section'])){
 
     $image_sql = "";
     if(isset($_FILES['section_image']) && $_FILES['section_image']['name'] != ""){
-        $ext = pathinfo($_FILES['section_image']['name'], PATHINFO_EXTENSION);
-        $image_name = time().'_'.rand(1000,9999).'.'.$ext;
-        $upload_dir = realpath(__DIR__ . '/../../assets/teams/') . '/';
-        move_uploaded_file($_FILES['section_image']['tmp_name'], $upload_dir . $image_name);
-        $image_sql = ", image='$image_name'";
+        $image_name = spectrum_store_image(
+            $_FILES['section_image'],
+            'teams',
+            __DIR__ . '/../../assets/teams/'
+        );
+        $image_sql = ", image='" . $conn->real_escape_string($image_name) . "'";
     }
 
     if($section){ 
@@ -188,7 +190,7 @@ $cards = $conn->query("SELECT * FROM teams_focus_cards ORDER BY id ASC");
         <input type="file" name="section_image">
         <?php if(!empty($section['image'])): ?>
             <div style="margin-top:10px;">
-                <img src="../../assets/teams/<?= $section['image'] ?>" alt="Section Image">
+                <img src="<?= htmlspecialchars(spectrum_admin_image_src($section['image'], '../../assets/teams/')) ?>" alt="Section Image">
             </div>
         <?php endif; ?>
 

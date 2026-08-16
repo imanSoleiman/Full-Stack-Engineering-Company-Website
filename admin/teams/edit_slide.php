@@ -1,5 +1,6 @@
 <?php 
 include "../../config.php";
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -12,9 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = $_POST['title'];
 
     if (!empty($_FILES["image"]["name"])) {
-        $fileName = time() . "_" . basename($_FILES["image"]["name"]);
-        $target = "../../assets/teams/" . $fileName;
-        move_uploaded_file($_FILES["image"]["tmp_name"], $target);
+        $fileName = spectrum_store_image(
+            $_FILES['image'],
+            'teams',
+            __DIR__ . '/../../assets/teams/'
+        );
+        spectrum_delete_image($slide['image'], __DIR__ . '/../../assets/teams/');
 
         $stmt = $conn->prepare("UPDATE professional_slides SET title=?, image=? WHERE id=?");
         $stmt->bind_param("ssi", $title, $fileName, $id);
@@ -164,7 +168,7 @@ ul.list-items li div.actions a.delete:hover { background-color: #a71d2a; }
     <input type="text" name="title" value="<?= htmlspecialchars($slide['title']) ?>" required>
 
     <label>Image:</label>
-    <img src="../../assets/teams/<?= htmlspecialchars($slide['image']) ?>" alt="Slide Image" class="slide-preview">
+    <img src="<?= htmlspecialchars(spectrum_admin_image_src($slide['image'], '../../assets/teams/')) ?>" alt="Slide Image" class="slide-preview">
     <input type="file" name="image" accept="image/*">
 
     <button type="submit"><i class="fa fa-save"></i> Save Changes</button>

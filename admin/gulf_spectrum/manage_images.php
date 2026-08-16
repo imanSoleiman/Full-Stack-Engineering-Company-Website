@@ -6,6 +6,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 include('../../config.php');
+require_once __DIR__ . '/../includes/image_upload.php';
 
 $category_id = $_GET['category_id'];
 $category = $conn->query("SELECT * FROM gulf_spectrum_categories WHERE id=$category_id")->fetch_assoc();
@@ -132,7 +133,7 @@ img.preview {
         <td class="description" title="<?= htmlspecialchars($row['description']) ?>">
             <?= htmlspecialchars($row['description']) ?>
         </td>
-        <td><img src="../../assets/gulfspectrum/<?= htmlspecialchars($row['image_name']) ?>" class="preview"></td>
+        <td><img src="<?= htmlspecialchars(spectrum_admin_image_src($row['image_name'], '../../assets/gulfspectrum/')) ?>" class="preview"></td>
         <td class="actions">
             <a href="edit_image.php?id=<?= $row['id'] ?>" class="edit"><i class="fa fa-edit"></i> Edit</a>
             <a href="delete_image.php?id=<?= $row['id'] ?>" class="delete" onclick="return confirm('Delete this image?')"><i class="fa fa-trash"></i> Delete</a>

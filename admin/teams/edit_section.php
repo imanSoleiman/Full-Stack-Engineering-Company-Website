@@ -1,5 +1,6 @@
 <?php
 include '../../config.php';
+require_once __DIR__ . '/../includes/image_upload.php';
 session_start();
 if (!isset($_SESSION['admin_logged_in'])) {
     header("Location: login.php");
@@ -15,12 +16,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $image_filename = $section['image_path']; // store only filename
 
     if (!empty($_FILES['image']['name'])) {
-        $targetDir = "../../assets/teams/"; 
-        $fileName = time() . "_" . basename($_FILES["image"]["name"]);
-        $targetFile = $targetDir . $fileName;
-        if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-            $image_filename = $fileName; 
-        }
+        $image_filename = spectrum_store_image(
+            $_FILES['image'],
+            'teams',
+            __DIR__ . '/../../assets/teams/'
+        );
     }
 
     $stmt = $conn->prepare("UPDATE middle_east_section SET header=?, content=?, image_path=? WHERE id=?");
@@ -131,9 +131,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <label for="image">Section Image</label>
         <input type="file" id="image" name="image">
         <?php if ($section['image_path']) {
-            $imagePath = "../../assets/teams/" . $section['image_path'];
+            $imagePath = spectrum_admin_image_src($section['image_path'], '../../assets/teams/');
         ?>
-            <img src="<?= $imagePath ?>" alt="Current Image" class="preview">
+            <img src="<?= htmlspecialchars($imagePath) ?>" alt="Current Image" class="preview">
         <?php } ?>
 
         <button type="submit"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>

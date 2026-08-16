@@ -6,6 +6,7 @@ if (!isset($_SESSION['admin_logged_in'])) {
 }
 
 include('../../config.php');
+require_once __DIR__ . '/../includes/image_upload.php';
 
 if(!isset($_GET['id'])) { header("Location: index.php"); exit; }
 $id = $_GET['id'];
@@ -19,14 +20,14 @@ if(isset($_POST['submit'])){
     $description = $_POST['description'];
 
     if(isset($_FILES['image']) && $_FILES['image']['name'] != ""){
-        $imageName = $_FILES['image']['name'];
-        $tmpName = $_FILES['image']['tmp_name'];
-        $uploadDir = "../../assets/spectrum/";
+        $imageName = spectrum_store_image(
+            $_FILES['image'],
+            'spectrum',
+            __DIR__ . '/../../assets/spectrum/'
+        );
 
         // Delete old image
-        if(file_exists($uploadDir.$image['image_name'])) unlink($uploadDir.$image['image_name']);
-
-        move_uploaded_file($tmpName, $uploadDir.$imageName);
+        spectrum_delete_image($image['image_name'], __DIR__ . '/../../assets/spectrum/');
     } else {
         $imageName = $image['image_name'];
     }
@@ -138,7 +139,7 @@ button:hover {
     <label>Replace Image (optional):</label>
     <input type="file" name="image" accept="image/*">
     <small>Current image:</small><br>
-    <img src="../../assets/spectrum/<?= htmlspecialchars($image['image_name']) ?>" class="preview">
+    <img src="<?= htmlspecialchars(spectrum_admin_image_src($image['image_name'], '../../assets/spectrum/')) ?>" class="preview">
 
     <button type="submit" name="submit"><i class="fa fa-save"></i> Update Image</button>
 </form>

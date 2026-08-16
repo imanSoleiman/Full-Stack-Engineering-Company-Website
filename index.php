@@ -2021,7 +2021,7 @@ will-change:transform;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/CustomEase.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
 
- <script src="header.js"></script>
+ <script src="/header.js"></script>
  <script>
 
  gsap.registerPlugin(ScrollTrigger);
@@ -2522,7 +2522,7 @@ gsap.fromTo(".red span span",
 
 
  </script>
- <script src="footer.js"></script>
+ <script src="/footer.js"></script>
  <script>
 
 

@@ -17,10 +17,10 @@ if($row = $result->fetch_assoc()){
 }
 
 if(isset($_POST['save_about'])){
-    $subheading = $_POST['subheading'];
-    $heading = $_POST['heading'];
-    $description = $_POST['description'];
-    $intro_text = $_POST['intro_text'];
+    $subheading = trim($_POST['subheading'] ?? '');
+    $heading = trim($_POST['heading'] ?? '');
+    $description = trim($_POST['description'] ?? '');
+    $intro_text = trim($_POST['intro_text'] ?? '');
 
     if(isset($about_section['id'])){
         $id = $about_section['id'];
@@ -37,10 +37,9 @@ if(isset($_POST['save_about'])){
 
 // ================== LEFT CARD ==================
 if(isset($_POST['save_left'])){
-    $title = $_POST['title'];
-    $description = $_POST['description'];
-    $text = $_POST['text'];
-    $overlay_text = $_POST['overlay_text'];
+    $title = trim($_POST['title'] ?? '');
+    $description = trim($_POST['description'] ?? '');
+    $overlay_text = trim($_POST['overlay_text'] ?? '');
 
     if(isset($_FILES['image1']) && $_FILES['image1']['name'] != ""){
         $image_name1 = spectrum_store_image(
@@ -60,8 +59,8 @@ if(isset($_POST['save_left'])){
         $conn->query("UPDATE left_cards SET image2='$image_name2' WHERE id=1");
     }
 
-    $stmt = $conn->prepare("UPDATE left_cards SET title=?, description=?, text=?, overlay_text=? WHERE id=1");
-    $stmt->bind_param("ssss", $title, $description, $text, $overlay_text);
+    $stmt = $conn->prepare("UPDATE left_cards SET title=?, description=?, overlay_text=? WHERE id=1");
+    $stmt->bind_param("sss", $title, $description, $overlay_text);
     $stmt->execute();
 
     $success_message = "Left Card updated successfully!";
@@ -70,48 +69,56 @@ $left_card = $conn->query("SELECT * FROM left_cards WHERE id=1")->fetch_assoc();
 
 // ================== RIGHT CARDS ==================
 if(isset($_POST['add_card'])){
-    $title = $_POST['title'];
-    $description = $_POST['description'];
+    $title = trim($_POST['title'] ?? '');
+    $description = trim($_POST['description'] ?? '');
     $stmt = $conn->prepare("INSERT INTO right_cards (title, description) VALUES (?, ?)");
     $stmt->bind_param("ss", $title, $description);
     $stmt->execute();
     $success_message = "Right Card added successfully!";
 }
 if(isset($_POST['edit_card'])){
-    $id = $_POST['id'];
-    $title = $_POST['title'];
-    $description = $_POST['description'];
+    $id = (int)($_POST['id'] ?? 0);
+    $title = trim($_POST['title'] ?? '');
+    $description = trim($_POST['description'] ?? '');
     $stmt = $conn->prepare("UPDATE right_cards SET title=?, description=? WHERE id=?");
     $stmt->bind_param("ssi", $title, $description, $id);
     $stmt->execute();
     $success_message = "Right Card updated successfully!";
 }
 if(isset($_GET['delete_card'])){
-    $id = $_GET['delete_card'];
-    $conn->query("DELETE FROM right_cards WHERE id=$id");
+    $id = (int)($_GET['delete_card']);
+    if($id > 0){
+        $stmt = $conn->prepare("DELETE FROM right_cards WHERE id=?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+    }
     $success_message = "Right Card deleted successfully!";
 }
 $right_cards = $conn->query("SELECT * FROM right_cards");
 
 // ================== RIGHT POINTS ==================
 if(isset($_POST['add_point'])){
-    $text = $_POST['text'];
+    $text = trim($_POST['text'] ?? '');
     $stmt = $conn->prepare("INSERT INTO right_points (text) VALUES (?)");
     $stmt->bind_param("s", $text);
     $stmt->execute();
     $success_message = "Right Point added successfully!";
 }
 if(isset($_POST['edit_point'])){
-    $id = $_POST['id'];
-    $text = $_POST['text'];
+    $id = (int)($_POST['id'] ?? 0);
+    $text = trim($_POST['text'] ?? '');
     $stmt = $conn->prepare("UPDATE right_points SET text=? WHERE id=?");
     $stmt->bind_param("si", $text, $id);
     $stmt->execute();
     $success_message = "Right Point updated successfully!";
 }
 if(isset($_GET['delete_point'])){
-    $id = $_GET['delete_point'];
-    $conn->query("DELETE FROM right_points WHERE id=$id");
+    $id = (int)($_GET['delete_point']);
+    if($id > 0){
+        $stmt = $conn->prepare("DELETE FROM right_points WHERE id=?");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+    }
     $success_message = "Right Point deleted successfully!";
 }
 $right_points = $conn->query("SELECT * FROM right_points");
@@ -180,22 +187,22 @@ $right_points = $conn->query("SELECT * FROM right_points");
     <h2>Edit Left Card</h2>
     <form method="POST" enctype="multipart/form-data">
         <label>Title</label>
-        <input type="text" name="title" value="<?= htmlspecialchars($left_card['title']) ?>">
+        <input type="text" name="title" value="<?= htmlspecialchars($left_card['title'] ?? '') ?>">
 
         <label>Description</label>
-        <input type="text" name="description" value="<?= htmlspecialchars($left_card['description']) ?>">
+        <input type="text" name="description" value="<?= htmlspecialchars($left_card['description'] ?? '') ?>">
 
         <label>Overlay Text</label>
         <input type="text" name="overlay_text" value="<?= htmlspecialchars($left_card['overlay_text'] ?? '') ?>">
 
         <label>Image 1</label><br>
-        <?php if($left_card['image1']): ?>
+        <?php if(!empty($left_card['image1'])): ?>
             <img src="<?= htmlspecialchars(spectrum_admin_image_src($left_card['image1'], '../../assets/home/')) ?>" width="100"><br>
         <?php endif; ?>
         <input type="file" name="image1"><br><br>
 
         <label>Image 2</label><br>
-        <?php if($left_card['image2']): ?>
+        <?php if(!empty($left_card['image2'])): ?>
             <img src="<?= htmlspecialchars(spectrum_admin_image_src($left_card['image2'], '../../assets/home/')) ?>" width="100"><br>
         <?php endif; ?>
         <input type="file" name="image2"><br><br>
@@ -239,14 +246,23 @@ $right_points = $conn->query("SELECT * FROM right_points");
         <tr><th>Text</th><th>Action</th></tr>
         <?php while($row = $right_points->fetch_assoc()): ?>
             <tr>
-            <form method="POST">
-                <td><input type="text" name="text" value="<?= $row['text'] ?>"></td>
                 <td>
-                    <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                    <button name="edit_point">Save</button>
-                    <a href="?delete_point=<?= $row['id'] ?>" onclick="return confirm('Delete this point?')">Delete</a>
+                    <input type="text" name="text_<?= (int)$row['id'] ?>" value="<?= htmlspecialchars($row['text'] ?? '') ?>" form="edit-point-<?= (int)$row['id'] ?>">
                 </td>
-            </form>
+                <td>
+                    <form method="POST" id="edit-point-<?= (int)$row['id'] ?>">
+                        <input type="hidden" name="id" value="<?= (int)$row['id'] ?>">
+                        <input type="hidden" name="text" value="<?= htmlspecialchars($row['text'] ?? '') ?>">
+                        <button type="submit" name="edit_point">Save</button>
+                    </form>
+                    <a href="?delete_point=<?= (int)$row['id'] ?>" onclick="return confirm('Delete this point?')">Delete</a>
+                    <script>
+                        document.getElementById('edit-point-<?= (int)$row['id'] ?>').addEventListener('submit', function () {
+                            this.querySelector('[name="text"]').value =
+                                document.querySelector('[name="text_<?= (int)$row['id'] ?>"]').value;
+                        });
+                    </script>
+                </td>
             </tr>
         <?php endwhile; ?>
     </table>
